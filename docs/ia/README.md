@@ -11,6 +11,7 @@ Construir uma plataforma de segurança em incrementos pequenos, funcionais e ver
 5. [Segurança e exercícios](seguranca.md)
 6. [Gratuidade e operação](custos.md)
 7. [Trilha de estudos](estudos.md)
+8. [Origens, apps e cobertura completa](origens-e-cobertura.md)
 
 O backlog não usa calendário, datas, duração ou responsáveis fixos. Cada módulo começa com um recorte utilizável e recebe incrementos. Módulos distintos podem ser desenvolvidos em paralelo contra contratos e fixtures, sem exigir serviços de outros membros do time.
 

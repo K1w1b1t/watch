@@ -29,3 +29,15 @@ Os exercícios usam exclusivamente ambiente próprio e fixtures. Não há malwar
 Métricas de aceitos, rejeitados, latência, erros de dependência e alertas por regra, sem rótulos com event_id/source_id de cardinalidade ilimitada. Logs estruturados com request_id, resultado e código; excluir bodies e Authorization. Usuário do processo sem privilégios, portas mínimas, TLS remoto, painel privado durante laboratório, patches e restauração testada.
 
 Runbook: reconhecer incidente; preservar evidência sintética; revogar credencial; conter serviço comprometido; restaurar backup; verificar integridade e registrar aprendizado. Não implementar bloqueio automático de hosts no MVP.
+
+## Apps, SDKs e fontes externas
+
+Nenhum app instalável ou browser recebe chave de Grafana, Discord, API administrativa cloud ou service_role Supabase. Sensores possuem credencial por instalação, revogável e com escopo de escrita restrito à sua source. SDKs server-side usam segredo do ambiente; SDK browser usa backend autenticado, consentimento e validação de origem, nunca chave embutida.
+
+Enrollment requer usuário autorizado, código temporário e consumo único atômico. Pausar coleta e remover a instalação deve interromper envio, remover credencial local e orientar revogação. Nenhuma coleta invisível de membros do time. Logs pessoais do SO, linhas de comando, arquivos, SMS e localização ficam excluídos.
+
+Root/jailbreak, Wi-Fi, horário de heartbeat e falha 401 são sinais limitados, não prova de invasão. Capacidade indisponível é unknown/unsupported; ausência de telemetria vira cobertura desconhecida, nunca selo de segurança. Browser, analytics e aparelho comprometido podem mentir: distinguir confiança da origem e confiar somente no tenant derivado da autenticação.
+
+Conectores autenticam origem e limitam payload antes de normalizar. Não criar endpoint genérico que execute SQL, comandos Redis, scripts ou fetch para URL fornecida no evento. Chaves de acesso às contas ficam no coletor servidor, com menor privilégio e sem permissão de alteração. Integrações reais com HirePair/Kiwibit exigem ler suas instruções e obter escopo próprio de implementação; as issues atuais usam apps demonstrativos.
+
+Discord recebe resumo mínimo com menções desabilitadas, sem PII; webhook é segredo. Loki/Grafana precisam de isolamento real por stack ou política disponível, não apenas filtro em dashboard. Nenhuma integração envia alerta real durante o planejamento.

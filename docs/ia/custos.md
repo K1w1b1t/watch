@@ -35,3 +35,15 @@ Terraform plan revisado antes de apply, state protegido fora do Git, credencial 
 - [Vercel Hobby](https://vercel.com/docs/plans/hobby)
 
 Referências consultadas no planejamento em 03/11/2026. Revalidar no momento de qualquer deploy.
+
+## Apps e conectores: limites do caminho gratuito
+
+- Vercel Drains e Supabase Log Drains não são o mecanismo gratuito padrão; usar instrumentação dos próprios servidores. Perde-se visibilidade do tráfego/evento que não atravessa essa instrumentação.
+- PostHog destinations, polling de Upstash e APIs cloud exigem confirmar plano, quotas e privilégio; não assumir webhook de intrusão disponível. Limitar polling e consumo do serviço monitorado.
+- Grafana Cloud Free é opcional, com limites de ingestão, consulta, retenção e usuários. Exportar alertas saneados primeiro; não duplicar todos os logs. Retenção externa pode exceder o buffer local e não é controlada pelo expurgo SQLite.
+- Build local Android e instalação de APK em aparelho próprio são o caminho inicial; loja, CI/EAS pago e assinatura comercial não são pré-requisitos. Conferir exigências atuais de distribuição antes de publicar.
+- No iOS, build e teste dependem de ambiente Apple compatível. Conta gratuita tem restrições e provisionamento temporário; distribuição contínua para o time não é prometida gratuita. Testar em simulador quando possível e registrar validações de hardware pendentes.
+- Desktop requer toolchain por SO; assinatura/notarização/distribuição têm limitações. Começar em Linux e registrar plataforma sem build validado em vez de alegar suporte universal.
+- A VPS Oracle em uso por outros projetos permanece fora do plano. Não reservar recurso nem ativar coleta nas contas existentes ao escrever as issues.
+
+Ver [origens e cobertura](origens-e-cobertura.md) para fontes oficiais de disponibilidade e limitações. Terraform não fornece créditos nem transforma um recurso pago em gratuito.

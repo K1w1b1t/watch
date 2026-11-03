@@ -28,3 +28,17 @@ Estudar o necessário para o próximo incremento; converter cada leitura em test
 Começar com testes e scanner de segredos. Acrescentar CodeQL somente para linguagens suportadas; usar ferramentas adequadas para Elixir, como [Sobelow](https://github.com/nccgroup/sobelow), quando houver Phoenix. Trivy cobre dependências/contêineres/IaC conforme os artefatos surgirem. ZAP atua apenas no alvo local próprio. Revisar achados manualmente, justificar exceções com motivo e condição de revisão. Não ligar todos os scanners antes de existir artefato útil para examinar.
 
 AWS Security pode fornecer teoria sobre IAM, logging, redes, resposta e proteção de dados; não exige provisionar serviços AWS pagos. A trilha do repositório não depende de curso, certificação ou agenda pessoal.
+
+## Trilha dos módulos complementares
+
+| Área | Estudar | Prática verificável |
+| --- | --- | --- |
+| SDKs e aplicações | [Next.js instrumentation](https://nextjs.org/docs/app/guides/instrumentation), [Nest interceptors](https://docs.nestjs.com/interceptors), [Python packaging](https://packaging.python.org/en/latest/tutorials/packaging-projects/), [Go modules](https://go.dev/doc/tutorial/create-module) | Enviar evento permitido em app de exemplo sem comprometer resposta da aplicação |
+| Desktop | [Tauri capabilities](https://v2.tauri.app/security/capabilities/), [distribuição](https://v2.tauri.app/distribute/) | Instalar, enviar, pausar e remover sem coleta oculta |
+| Mobile | [React Native](https://reactnative.dev/docs/getting-started), [SecureStore](https://docs.expo.dev/versions/latest/sdk/securestore/), [BackgroundTask](https://docs.expo.dev/versions/latest/sdk/background-task/) | Envio consentido em primeiro plano; distinguir atraso do SO de ataque |
+| Origem externa | [PostHog webhook](https://posthog.com/docs/data-pipelines/destinations/webhook), [Upstash stats](https://upstash.com/docs/devops/developer-api/redis/get_database_stats), [Supabase webhooks](https://supabase.com/docs/guides/database/webhooks) | Normalizar fixture e rejeitar PII antes do Watch |
+| Discord | [Webhooks](https://discord.com/developers/docs/resources/webhook), [rate limits](https://discord.com/developers/docs/topics/rate-limits) | Entrega fake com 429, retry limitado e menções desabilitadas |
+| Grafana | [Loki HTTP API](https://grafana.com/docs/loki/latest/reference/loki-http-api/), [Terraform provider](https://registry.terraform.io/providers/grafana/grafana/latest/docs) | Exportar alerta saneado e reproduzir dashboard local |
+| Correlação | [Sigma](https://sigmahq.io/docs/), [ATT&CK](https://attack.mitre.org/) | Regra versionada, teste benigno/malicioso e evidência de falso positivo |
+
+Uma regra ou evento que menciona ATT&CK não certifica eficácia da detecção. Enriquecimento com IP/reputação e verificação de vazamentos dependem de decisão própria de privacidade/custo; ficam como pesquisa futura, sem enviar dados pessoais a terceiros no caminho inicial.

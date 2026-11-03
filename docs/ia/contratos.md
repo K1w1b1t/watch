@@ -51,3 +51,33 @@ Atualização opcional em Phoenix Channel: tópico derivado do tenant validado n
 6. Histórico vazio, alerta novo, reconhecido e resolvido; dependência indisponível.
 
 Usar IDs artificiais, horários fixos e credenciais de teste sem validade externa. Cada módulo documenta como subir seu modo de demonstração isolado. Mocks validam o contrato, mas não substituem o E2E integrado antes da entrega conjunta.
+
+## Extensão planejada v1.1 — novos produtores
+
+C02 formaliza uma versão `1.1` mantendo os eventos `1` existentes válidos. Não aceitar novos campos no schema `1` nem reabrir payload livre. A rota HTTP permanece `/v1/telemetry/ingest`, escolhendo validador por schema_version. Sem alteração silenciosa dos códigos de resposta.
+
+Eventos 1.1 preservam campos base e acrescentam kinds fechados: `source.heartbeat`, `device.posture`, `app.access_denied`, `service.operation_failed`, `db.change_observed`, `analytics.signal` e `account.security_signal`.
+
+- `source.heartbeat`: platform em linux/windows/macos/android/ios/server; app_version string de versão limitada a 32 caracteres. Não envia nomes/identificadores de hardware.
+- `device.posture`: platform, check_id de allowlist versionada, result `pass`/`fail`/`unknown`/`unsupported`. Disponibilidade de bloqueio de tela ou integridade só quando API pública permitir; unknown jamais significa seguro. Não transmitir SSID, localização, SMS ou lista de apps.
+- `app.access_denied`: subject_id pseudônimo e action_id de catálogo da aplicação, sem URL/query/header/cookie.
+- `service.operation_failed`: service `supabase`/`upstash`/`vercel`/`oracle`/`other`; operation `auth`/`read`/`write`/`delete`; outcome `denied`/`timeout`/`unavailable`/`quota`. Sem comandos Redis, SQL ou nomes de objetos.
+- `db.change_observed`: resource_id pseudônimo de tabela permitida e operation `insert`/`update`/`delete`. Sem valores de colunas ou IDs de registros pessoais.
+- `analytics.signal`: signal_id de catálogo, subject_id pseudônimo quando consentido e verificável; trust_level é atribuído pelo adaptador no servidor, nunca pelo browser.
+- `account.security_signal`: signal_id de catálogo e provider de enumeração aprovada. Um login OAuth no Watch não cria esse evento por si só.
+
+Catálogos iniciais com fixtures: action_id `demo.admin.read`; signal_id `demo.sensitive_action` para analytics e `demo.credential_changed` para conta; check_id `screen_lock_available` e `app_integrity`. Cada check é apenas observação da API documentada, não diagnóstico global. Ampliar catálogos exige schema e teste. Campos específicos são obrigatórios apenas no kind correspondente; rejeitar os demais. Sem qualquer token/credencial de provedor no envelope.
+
+## Registro e pareamento de sources
+
+Source tem source_id pseudônimo, tenant_id interno, tipo de produtor, status enabled/disabled, platform opcional e last_seen_at calculado no servidor. Cadastro e consulta exigem identidade humana e membership; a fonte só envia com credencial vinculada a ela.
+
+RG02 define pareamento com código aleatório de uso único (mínimo 128 bits), validade de 5min e consumo atômico. A emissão exige analyst; o resgate tem rate limit e retorna credencial somente uma vez. QR/código nunca contém token do Grafana/Discord. URLs de destino são configuradas pelo operador: sem aceitar URL arbitrária de origem para o servidor visitar.
+
+## Notificação e exportação
+
+Notificação contém alert_id, rule_id/version, severity, reason_code e URL de detalhe em origem allowlisted; o tenant é obtido do roteamento interno. Conteúdo saneado, tamanho limitado, menções Discord desativadas; nenhum evento bruto. Chave de entrega: tenant + alert_id + destino. Estado pending/sent/failed, tentativas limitadas e próxima tentativa persistida. Uma falha após aceite do Discord pode duplicar mensagem: não prometer exactly-once.
+
+Exportação Loki é derivada de AlertStore, com token apenas no servidor. Labels limitadas a ambiente, regra e severidade; nunca ID de usuário, source, tenant ou alert_id como label de cardinalidade não limitada. Isolamento é responsabilidade da stack/credencial e do acesso ao Grafana; filtro visual não implementa autorização.
+
+Evidência de alerta inclui snapshot mínimo dos eventos selecionados, hash do conteúdo normalizado, regra/versão e horário de coleta. Hash não prova autenticidade de uma origem comprometida. Expiração do buffer bruto não pode apagar a explicação silenciosamente: indicar evidência expirada quando o snapshot também for expurgado.
