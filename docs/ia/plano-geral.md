@@ -35,5 +35,3 @@ Adaptadores e integrações de plataformas, agentes/sensores/apps nativos, parea
 ## Pesquisa preservada
 
 OCSF, STIX/TAXII, Bloom filters, Broadway/ETS, baselines, Axiom e R2/Parquet permanecem ideias de estudo, sem dependência do laboratório. O subconjunto Sigma está delimitado em DE08; não implica compatibilidade integral. Nenhum indicador, score ou erro de aplicação confirma comprometimento. Pesquisa só vira execução após issue pequena com contrato, fixture e limite explícitos.
-
-A [revisão inicial](revisao-planejamento-2026-11-03.md) é registro histórico anterior a este recorte; suas propostas de piloto empresarial não são requisitos atuais.

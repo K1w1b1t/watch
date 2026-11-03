@@ -19,7 +19,7 @@ Terraform plan revisável, state/segredos fora do Git, menor privilégio e teard
 
 ## Limites internos
 
-Um evento/POST até 16 KiB; 10 requisições/min/credencial por processo inicialmente; buffer 24h, até 10.000 eventos ou 10 MiB JSON canônico/tenant; snapshots 7 dias ou 10 MiB/tenant. São limites de laboratório detalhados nos contratos, sem promessa de capacidade empresarial. O antigo teto genérico de 1.000 eventos/dia foi retirado para evitar um limite sem implementação atribuída; IF04 define eventual orçamento remoto verificável antes de execução.
+Um evento/POST até 16 KiB; 10 requisições/min/credencial por processo inicialmente; buffer 24h, até 10.000 eventos ou 10 MiB JSON canônico/tenant; snapshots 7 dias ou 10 MiB/tenant. São limites de laboratório detalhados nos contratos, sem promessa de capacidade empresarial. IF04 define eventual orçamento remoto verificável antes de execução.
 
 SDK TS tem timeout 2s e fila/retry opcionais limitados; fila em memória perde ao reiniciar. Python/Go começam sem fila/retry. Não ampliar plano ao saturar: rejeitar explicitamente conforme contrato. Nenhum SDK exige plataforma específica de hospedagem.
 

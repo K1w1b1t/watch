@@ -71,7 +71,3 @@ A tabela abaixo é referência por módulo/código. Para a sequência de trabalh
 - **Remoto opcional:** IF04 decide; IF02 faz smoke isolado; IF03 prepara plano sem apply. Não são pré-requisitos para concluir o laboratório local.
 
 Cada módulo atualiza testes/CI relevantes e documentação na própria PR. Não inserir metas de piloto/aplicação real, onboarding empresarial, casos, tuning, backup/restore integrados ou capacidade/latência empresarial. Diagnóstico local OB03 mantém apenas o escopo técnico já previsto.
-
-## Histórico da revisão
-
-CO01/CO02 mantêm códigos/números históricos, mas agora pertencem ao módulo SDK TypeScript: CLI que importa SDK e retry/fila do próprio SDK. ST03 foi reduzida à persistência e ST05 separa API humana. C03, IN04, SK07 e RG04 fecham transporte, integração 1.1 e vínculos. Regras demo/básica/ampliada têm ativação explícita. A revisão inicial é histórica e não adiciona requisitos empresariais ao backlog vigente.

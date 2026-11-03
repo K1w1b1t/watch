@@ -24,7 +24,7 @@ JSON UTF-8 sem compressão, um evento/POST, até 16 KiB. C01 fixa canonicalizaç
 
 Sucesso: event_id, request_id UUID e status stored/duplicate. Erro: code estável e request_id, sem eco de body/segredo. Replays são reautorizados; não contornam revogação/status. Fonte inexistente ou disabled não grava. Resposta de sucesso não depende da execução do detector: evento aceito fica disponível para polling durável.
 
-IN02: 10 requisições autenticadas/min por credencial, janela fixa de recebimento, incluindo replay, 429 com Retry-After; inicialmente por processo. ST02: 24h por received_at, teto 10.000 eventos ou 10 MiB JSON canônico/tenant, configurável. Expurgar expirados antes de append; sem espaço, rejeitar com 429 capacity_exceeded, sem expulsar recentes. Esses são limites do laboratório, não cotas ou capacidade prometida de fornecedor. O antigo orçamento genérico de 1.000 eventos/dia não é requisito adicional; remoto exige limite específico decidido em IF04.
+IN02: 10 requisições autenticadas/min por credencial, janela fixa de recebimento, incluindo replay, 429 com Retry-After; inicialmente por processo. ST02: 24h por received_at, teto 10.000 eventos ou 10 MiB JSON canônico/tenant, configurável. Expurgar expirados antes de append; sem espaço, rejeitar com 429 capacity_exceeded, sem expulsar recentes. Esses são limites do laboratório, não cotas ou capacidade prometida de fornecedor. Execução remota exige limite específico decidido em IF04.
 
 ## API interna e portas
 
