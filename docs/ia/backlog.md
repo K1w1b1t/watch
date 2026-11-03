@@ -6,6 +6,8 @@ Escopo aprovado em 03/11/2026: ingestão somente por SDKs server-side. CLI usa S
 
 ## Issues ativas
 
+A tabela abaixo é referência por módulo/código. Para a sequência de trabalho e o paralelismo, usar a [ordem de execução](ordem-execucao.md).
+
 | Código | Módulo | Resultado | Pré-requisitos para concluir |
 | --- | --- | --- | --- |
 | [C01](https://github.com/K1w1b1t/watch/issues/1) | contratos | Formalizar contratos v1 e fixtures compartilhadas | Nenhum |

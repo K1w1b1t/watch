@@ -10,6 +10,8 @@ O laboratório usa dados sintéticos e serviços locais. Não exige aplicação 
 
 ## Leitura
 
+Para escolher a próxima tarefa, começar pela [ordem de execução](ordem-execucao.md), que separa o fluxo básico, o ampliado e os complementos.
+
 1. [Plano geral](plano-geral.md)
 2. [Arquitetura e limites](arquitetura.md)
 3. [Contratos entre módulos](contratos.md)
