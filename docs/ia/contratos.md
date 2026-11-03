@@ -1,83 +1,91 @@
-# Contratos v1 propostos
+# Contratos propostos do laboratório
 
-São especificações de planejamento, não schemas executáveis. Cada módulo pode construir seu adaptador em memória e suas fixtures a partir deste texto. A issue C01 formaliza schemas e testes de contrato; qualquer mudança incompatível exige revisar produtores, consumidores e fixtures.
+C01 (#1) transforma v1 em schemas/fixtures canônicos; C02 (#26) adiciona 1.1; C03 (#72) formaliza OpenAPI interna/topologia. São propostas até essas entregas. Consumidores compartilham os mesmos casos de conformidade. IN04 (#74) e SK07 (#75) comprovam integração 1.1 real.
 
-## Evento
+## Evento v1
 
 | Campo | Regra |
 | --- | --- |
-| schema_version | String fixa `1` |
-| event_id | UUID gerado na origem; estável durante retry |
-| occurred_at | RFC3339 UTC; aceitar até 24h no passado e 5min no futuro usando relógio injetável |
-| kind | `auth.failure`, `auth.success` ou `host.port_observed` |
-| severity | `info`, `low`, `medium`, `high` ou `critical`; contexto fornecido pela origem, nunca prova de ataque |
-| source_id | Identificador pseudônimo; 1–64 caracteres alfanuméricos, hífen ou sublinhado |
-| subject_id | Identificador pseudônimo com as mesmas restrições; obrigatório nos eventos de autenticação |
-| port | Inteiro de 1 a 65535; obrigatório somente em `host.port_observed` |
+| schema_version | String `1` |
+| event_id | UUID canônico minúsculo, gerado uma vez e preservado no retry |
+| occurred_at | RFC3339 UTC; até 24h no passado e 5min no futuro, relógio injetável |
+| kind | `auth.failure` ou `auth.success` |
+| severity | `info`, `low`, `medium`, `high`, `critical`; contexto da origem |
+| source_id | Pseudônimo 1–64 caracteres alfanuméricos, hífen ou sublinhado; vinculado à chave |
+| subject_id | Pseudônimo com a mesma restrição; obrigatório em autenticação |
 
-Rejeitar campos desconhecidos. Proibir payload livre, senha, token, e-mail, nome, CPF, IP real, hostname pessoal e linha de comando. O tenant é metadado interno derivado da credencial, não campo aceito do cliente. OCSF é referência para uma futura conversão, sem alegar conformidade deste envelope reduzido.
+Rejeitar campos desconhecidos, tenant do cliente e payload livre. Não emitir senha, token, email, nome, CPF, IP, hostname ou linha de comando. Exemplos usam IDs artificiais de fixture. Em integração futura, geração de pseudônimo exige política explícita; restrição de string/schema não prova ausência universal de PII. SDK não coleta logs automaticamente.
 
-Limite inicial: um evento por POST, corpo até 16 KiB; JSON UTF-8; sem compressão. Tenant e source_id são vinculados pela credencial. Deduplicação por tenant + event_id; conteúdo diferente com o mesmo identificador é conflito.
+JSON UTF-8 sem compressão, um evento/POST, até 16 KiB. C01 fixa canonicalização JSON compartilhada: ordenar propriedades recursivamente, sem whitespace, strings UTF-8 e sem floats/campos livres neste envelope. UUIDs e timestamps são normalizados antes de comparar; C01 fixa precisão UTC e fixtures em todas as linguagens. Deduplicação tenant+event_id por conteúdo normalizado; diferente é conflito. Hash é de conteúdo, não prova de autenticidade da origem.
 
-## Ingestão HTTP
+## Ingestão
 
-`POST /v1/telemetry/ingest`: Bearer de máquina, Content-Type application/json. 201 após persistir evento novo; 200 para repetição idêntica sem novo efeito; 400 schema inválido; 401 chave ausente/inválida/revogada; 403 escopo ou source não permitido; 409 conflito de ID; 413 excesso de tamanho; 415 tipo não suportado; 429 limite; 503 dependência indisponível. 405 para método não permitido.
+`POST /v1/telemetry/ingest`, Bearer de SDK e Content-Type application/json. 201 após append durável novo; 200 replay idêntico; 400 schema/versão inválidos; 401 chave ausente/inválida/revogada; 403 source/escopo inválido ou source disabled; 405 método; 409 ID conflitante; 413 corpo; 415 tipo/compressão; 429 limite; 503 dependência indisponível. Modo em memória IN01 é local e não comprova persistência em disco.
 
-Erros: code estável e request_id UUID, sem ecoar corpo ou segredo. Resposta de sucesso: event_id, request_id e status `stored` ou `duplicate`. Não responder sucesso se o armazenamento falhar.
+Sucesso: event_id, request_id UUID e status stored/duplicate. Erro: code estável e request_id, sem eco de body/segredo. Replays são reautorizados; não contornam revogação/status. Fonte inexistente ou disabled não grava. Resposta de sucesso não depende da execução do detector: evento aceito fica disponível para polling durável.
 
-## Portas entre módulos
+IN02: 10 requisições autenticadas/min por credencial, janela fixa de recebimento, incluindo replay, 429 com Retry-After; inicialmente por processo. ST02: 24h por received_at, teto 10.000 eventos ou 10 MiB JSON canônico/tenant, configurável. Expurgar expirados antes de append; sem espaço, rejeitar com 429 capacity_exceeded, sem expulsar recentes. Esses são limites do laboratório, não cotas ou capacidade prometida de fornecedor. O antigo orçamento genérico de 1.000 eventos/dia não é requisito adicional; remoto exige limite específico decidido em IF04.
 
-- Identity.verify: segredo de máquina → tenant_id, credential_id, source_id e scopes, ou erro. Falha de dependência fecha o acesso. A credencial só recebe `events:write` inicialmente.
-- EventStore.append: tenant validado + evento → stored/duplicate/conflict. Implementação em memória para desenvolvimento; SQLite para persistência local.
-- EventStore.list: tenant autorizado + cursor + limit → itens e next_cursor. Ordenação estável por received_at e event_id. Limit padrão 20, máximo 100.
-- Detector.evaluate: tenant + evento normalizado → zero ou mais alertas. Não executa HTTP nem acessa relógio global; estado e relógio são dependências explícitas.
-- AlertStore: gravação idempotente por tenant + alert_id; listagem paginada, detalhe e atualização de status autorizados.
+## API interna e portas
 
-## Alerta e consulta
+C03 define paths, schemas e proteção dos endpoints internos de verify/append, com segredo próprio, timeout 2s e request_id. Core é único dono dos arquivos SQLite. Não aceitar contexto de tenant de um chamador não autenticado.
 
-Alerta contém schema_version `1`, alert_id UUID, tenant_id interno, rule_id, rule_version, severity calculada pela regra, event_ids, detected_at UTC, status (`new`, `acknowledged`, `resolved`) e reason_code estável. Evidências referenciam IDs de eventos do próprio tenant; não embutir payload livre.
+- Identity.verify: chave → tenant_id, credential_id, source_id, scopes; falha fechada. Chave inicial events:write, 256 bits, somente hash persistido. Source/status é revalidado pelo core antes de append.
+- HumanIdentity.verify: JWT humano → user_id interno, membership e papel no tenant; viewer lê e analyst altera. Emissor/JWKS de demonstração só loopback, proibido no perfil remoto. Fixtures/CLI provisionam memberships locais.
+- EventStore.append: contexto autorizado+evento → stored/duplicate/conflict/capacity_exceeded. Core atribui received_at e ingest_seq monotônico. List usa cursor opaco por ingest_seq, padrão 20/máximo 100. Occurred_at não é checkpoint.
+- Detector.evaluate: tenant+evento normalizado+estado/relógio explícitos → sinais; sem HTTP/relógio global na função pura.
+- AlertStore: gravação única tenant+alert_id e occurrence_key, lista/detalhe/status. Referências e snapshots pertencem ao mesmo tenant. Sequência monotônica de criação alimenta consumidores de notificação/exportação.
 
-`GET /v1/alerts` retorna items e next_cursor; filtros opcionais status e severity; `GET /v1/alerts/{id}` inclui evidências permitidas. Recurso de outro tenant retorna 404. Sem sessão: 401. Papel viewer pode ler; analyst pode alterar status por `PATCH /v1/alerts/{id}` com campo status e transições new → acknowledged → resolved. Tentativa de outra transição: 409. Escrita sem papel: 403. Detalhes de identidade humana definidos em ID03.
+DE03 usa executor único e checkpoint recuperável, salva efeitos antes de avançar e reconstrói janela no restart. Lacuna de retenção vira coverage_gap; não alegar análise completa do período expurgado. DE05 acrescenta estado transacional para dois processos no mesmo host, não SQLite por rede.
 
-Atualização opcional em Phoenix Channel: tópico derivado do tenant validado no servidor. Mensagem contém alert_id e tipo de mudança; cliente relê a API. Reconexão repõe a lista por HTTP.
+## Alertas e perfis de regra
 
-## Fixtures que cada módulo deve conseguir reproduzir
+Alerta v1: schema_version `1`, alert_id UUID, tenant_id interno, rule_id/version, severity calculada, event_ids, detected_at, status new/acknowledged/resolved e reason_code. occurrence_key é chave interna determinística; repetição não reabre status.
 
-1. Tenant A com source A, credencial válida e evento auth.failure válido.
-2. Mesmo evento repetido e variante com conteúdo conflitante.
-3. Tenant B com source B; tentativas de leitura e envio cruzados rejeitadas.
-4. Chaves inválida, revogada e com source/escopo incompatíveis.
-5. Cinco falhas do mesmo subject/source/tenant dentro de 60 segundos e sequência abaixo do limiar.
-6. Histórico vazio, alerta novo, reconhecido e resolvido; dependência indisponível.
+- Demo opt-in DE01: demo.auth_failure, uma falha→low. Desabilitada nos exercícios integrados.
+- Básico DE02/DS03: somente auth.failure_threshold, cinco falhas únicas por tenant/source/subject em janela inclusiva de 60s→medium. Ocorrência ancorada no quinto evento, cooldown 60s por chave. Quatro falhas→zero alertas.
+- Ampliado DE06/DS04: somente auth.failure_then_success, cinco falhas em 60s e depois sucesso em até 120s desde a quinta falha, mesmo tenant/subject/namespace e ao menos duas sources vinculadas→high. Âncora no success event_id e cooldown 120s por conjunto de sources/subject. Regra medium desabilitada nesse perfil.
 
-Usar IDs artificiais, horários fixos e credenciais de teste sem validade externa. Cada módulo documenta como subir seu modo de demonstração isolado. Mocks validam o contrato, mas não substituem o E2E integrado antes da entrega conjunta.
+Eventos são ordenados por occurred_at/event_id para avaliar candidatos; replay não conta. DE02 mantém até 24h de histórico limitado e reavalia região afetada por atraso. Ocorrências já emitidas não são apagadas; chegada tardia pode revelar ocorrência adicional, sem reescrever a anterior. Fixtures fixam chegadas, fronteiras, âncoras e reinício. Não prometer mesma quantidade de alertas em diferentes ordens de chegada arbitrárias; exigir replay idempotente do mesmo histórico recebido.
 
-## Extensão planejada v1.1 — novos produtores
+DE04 suporta templates equality e auth_failure_threshold com operadores allowlisted. Sigma DE08 suporta somente mapa selection com igualdade escalar AND em kind/severity/source_id e condition `selection`. Rejeitar listas/modifiers/OR/not/regex/agregação/campos desconhecidos. DE07 emite documento de análise CLI separado (analysis_version, subject, janela, score 0..100 e fatores rule/version/occurrence_key/points), sem alterar alerta v1 ou persistir score.
 
-C02 formaliza uma versão `1.1` mantendo os eventos `1` existentes válidos. Não aceitar novos campos no schema `1` nem reabrir payload livre. A rota HTTP permanece `/v1/telemetry/ingest`, escolhendo validador por schema_version. Sem alteração silenciosa dos códigos de resposta.
+## Consulta humana
 
-Eventos 1.1 preservam campos base e acrescentam kinds fechados: `source.heartbeat`, `device.posture`, `app.access_denied`, `service.operation_failed`, `db.change_observed`, `analytics.signal` e `account.security_signal`.
+ST03 persiste; ST05 (#73) expõe GET /v1/alerts (items/next_cursor, filtros status/severity), GET /v1/alerts/{id} (detalhe/evidência) e PATCH status. Sem sessão 401; viewer escreve 403; objeto de outro tenant 404; transição inválida 409. Somente new→acknowledged→resolved. Não há comentários, atribuição ou casos empresariais nesta fase.
 
-- `source.heartbeat`: platform em linux/windows/macos/android/ios/server; app_version string de versão limitada a 32 caracteres. Não envia nomes/identificadores de hardware.
-- `device.posture`: platform, check_id de allowlist versionada, result `pass`/`fail`/`unknown`/`unsupported`. Disponibilidade de bloqueio de tela ou integridade só quando API pública permitir; unknown jamais significa seguro. Não transmitir SSID, localização, SMS ou lista de apps.
-- `app.access_denied`: subject_id pseudônimo e action_id de catálogo da aplicação, sem URL/query/header/cookie.
-- `service.operation_failed`: service `supabase`/`upstash`/`vercel`/`oracle`/`other`; operation `auth`/`read`/`write`/`delete`; outcome `denied`/`timeout`/`unavailable`/`quota`. Sem comandos Redis, SQL ou nomes de objetos.
-- `db.change_observed`: resource_id pseudônimo de tabela permitida e operation `insert`/`update`/`delete`. Sem valores de colunas ou IDs de registros pessoais.
-- `analytics.signal`: signal_id de catálogo, subject_id pseudônimo quando consentido e verificável; trust_level é atribuído pelo adaptador no servidor, nunca pelo browser.
-- `account.security_signal`: signal_id de catálogo e provider de enumeração aprovada. Um login OAuth no Watch não cria esse evento por si só.
+UI02 recebe token do emissor demo por fluxo documentado, guarda só em memória e limpa sessão no logout/401. Channel opcional publica só ID/tipo e deriva tópico do tenant; expiração e perda de membership interrompem avisos. Reconexão relê HTTP.
 
-Catálogos iniciais com fixtures: action_id `demo.admin.read`; signal_id `demo.sensitive_action` para analytics e `demo.credential_changed` para conta; check_id `screen_lock_available` e `app_integrity`. Cada check é apenas observação da API documentada, não diagnóstico global. Ampliar catálogos exige schema e teste. Campos específicos são obrigatórios apenas no kind correspondente; rejeitar os demais. Sem qualquer token/credencial de provedor no envelope.
+## Extensão 1.1 emitida por SDK
 
-## Registro e pareamento de sources
+Mesma rota, schema_version `1.1`, campos base v1. Mantém auth.failure/success com subject_id obrigatório e acrescenta somente:
 
-Source tem source_id pseudônimo, tenant_id interno, tipo de produtor, status enabled/disabled, platform opcional e last_seen_at calculado no servidor. Cadastro e consulta exigem identidade humana e membership; a fonte só envia com credencial vinculada a ela.
+| Kind | Campos específicos |
+| --- | --- |
+| source.heartbeat | platform fixo `server`; app_version 1–32 caracteres de versão; sem subject_id |
+| app.access_denied | subject_id pseudônimo e action_id de catálogo (`demo.admin.read`) |
+| analytics.signal | subject_id pseudônimo, signal_id de catálogo (`demo.sensitive_action`), trust_level fixo `client_reported` |
 
-RG02 define pareamento com código aleatório de uso único (mínimo 128 bits), validade de 5min e consumo atômico. A emissão exige analyst; o resgate tem rate limit e retorna credencial somente uma vez. QR/código nunca contém token do Grafana/Discord. URLs de destino são configuradas pelo operador: sem aceitar URL arbitrária de origem para o servidor visitar.
+Campos específicos só são aceitos no kind correspondente. Analytics é relato consentido do browser construído pelo próprio backend, nunca prova autoritativa; só backend envia por SDK TS. Heartbeat exige chamada explícita ao SDK, sem coleta automática. Não há device.posture, evento de conta/provedor, SQL, Redis, bucket ou webhook de plataforma. TS ganha 1.1 em SK07; Python/Go permanecem v1 nesta fase.
 
-## Notificação e exportação
+## Sources, contato e vínculos
 
-Notificação contém alert_id, rule_id/version, severity, reason_code e URL de detalhe em origem allowlisted; o tenant é obtido do roteamento interno. Conteúdo saneado, tamanho limitado, menções Discord desativadas; nenhum evento bruto. Chave de entrega: tenant + alert_id + destino. Estado pending/sent/failed, tentativas limitadas e próxima tentativa persistida. Uma falha após aceite do Discord pode duplicar mensagem: não prometer exactly-once.
+RG01: source_id pseudônimo, tenant interno, tipo sdk-server, status enabled/disabled; API create/list/detail/status autorizada por identidade humana. Chave é emitida via CLI ID01 e revogada/rotacionada via ID02, sem pareamento. Source reabilitada não reativa chave revogada.
 
-Exportação Loki é derivada de AlertStore, com token apenas no servidor. Labels limitadas a ambiente, regra e severidade; nunca ID de usuário, source, tenant ou alert_id como label de cardinalidade não limitada. Isolamento é responsabilidade da stack/credencial e do acesso ao Grafana; filtro visual não implementa autorização.
+RG03: last_seen_at só após append novo persistido, por received_at; replay/rejeitado não renova. Unknown sem evento, fresh até 30min inclusive, stale depois (limiar configurável). Silêncio não significa ataque nem segurança.
 
-Evidência de alerta inclui snapshot mínimo dos eventos selecionados, hash do conteúdo normalizado, regra/versão e horário de coleta. Hash não prova autenticidade de uma origem comprometida. Expiração do buffer bruto não pode apagar a explicação silenciosamente: indicar evidência expirada quando o snapshot também for expurgado.
+RG04 (#76): CLI administrativa cria/lista/remove vínculo persistente entre sources do mesmo tenant e namespace de subject compartilhado explicitamente. Detector não deduz vínculo por email/IP ou apenas por strings iguais. Desabilitar source impede novas correlações com ela.
+
+## Evidências e saídas
+
+ST04 estende o caminho obrigatório de criação do alerta: snapshot mínimo de eventos, hash canônico, regra/versão e horário em transação. Buffer expurgado mantém snapshot; snapshot até 7 dias ou 10 MiB JSON canônico/tenant, antigos primeiro. Depois preservar evidence_expired. Não prometer investigação completa após expurgo.
+
+Outbox lê criação do AlertStore por sequência e insere tarefas+checkpoint em transação recuperável. Chave tenant+alert_id+destino; claim com lease 30s; cinco tentativas totais, teto Retry-After 30s e expiração 24h; 400/401 falha final. Default high/critical, por isso DS03 medium não exige Discord. NT03 roteia antes de enfileirar; cooldown 5min tenant/conjunto ordenado de sources/rule. Destino ausente/supressão são resultados persistidos, sem apagar alerta.
+
+Discord recebe somente alert_id, regra/versão, severity, reason_code e link em origem allowlisted; sem body/evento bruto e allowed_mentions desativado. Segredo só no servidor. Fake externo nos testes; após aceite externo e falha de confirmação pode haver duplicata.
+
+Loki é exportação de AlertStore por checkpoint próprio, timeout 2s e até três tentativas por ciclo, espera até 30s; falha não avança cursor. Labels somente ambiente/regra/severidade. Isolamento local por stack/credencial por tenant; Grafana não usa filtro visual como autorização. Retenção externa e duplicatas possíveis são independentes do expurgo Watch.
+
+## Fixtures comuns
+
+Tenant/source A e B, chaves válidas/inválidas/revogadas, source disabled, evento repetido/conflitante, janela abaixo/no limiar, sequência multifonte vinculada e sem vínculo, falha de dependência, evidência expirada e versões 1/1.1. IDs artificiais, relógio fixo e credenciais sem validade externa. Mocks ajudam a começar, não encerram E2E real exigido.

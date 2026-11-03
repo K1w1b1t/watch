@@ -1,22 +1,26 @@
 # Planejamento do Watch
 
-Construir uma plataforma de segurança em incrementos pequenos, funcionais e verificáveis. O aprendizado de DevSecOps acompanha cada funcionalidade: entender a ameaça, implementar a defesa, observar o comportamento e demonstrar a detecção.
+Construir um laboratório de telemetria e detecção em incrementos pequenos, funcionais e verificáveis. O aprendizado de DevSecOps acompanha cada funcionalidade: entender a ameaça, implementar a defesa, observar o comportamento e demonstrar a detecção.
+
+## Escopo vigente
+
+Somente SDKs server-side TypeScript, Python e Go enviam eventos ao ingresso. A CLI importa o SDK TS. Next.js e NestJS são apps de exemplo; React envia sinal consentido ao próprio backend, que usa o SDK TS. Não existem adaptadores de Vercel, Supabase, Upstash, PostHog, Oracle ou outras plataformas nesta fase. Agentes, sensores, apps desktop/mobile e pareamento estão adiados.
+
+O laboratório usa dados sintéticos e serviços locais. Não exige aplicação de cliente, onboarding empresarial completo, investigação/casos, tuning operacional, backup/restauração integrados ou validação de capacidade/latência empresarial. Discord é saída de notificação; Loki/Grafana são saídas opcionais de consulta.
 
 ## Leitura
 
-- [Plano geral consolidado](plano-geral.md)
-- [Diagramas Mermaid incorporados](diagramas.md)
+1. [Plano geral](plano-geral.md)
+2. [Arquitetura e limites](arquitetura.md)
+3. [Contratos entre módulos](contratos.md)
+4. [Como executar uma issue](execucao.md)
+5. [Backlog com dependências](backlog.md)
+6. [Segurança e exercícios](seguranca.md)
+7. [Custos e operação do laboratório](custos.md)
+8. [Trilha de estudos](estudos.md)
+9. [Origens e cobertura](origens-e-cobertura.md)
+10. [Diagramas](diagramas.md)
 
+O backlog não usa datas, duração ou responsáveis fixos. É permitido iniciar protótipos com contratos e fakes; para concluir, respeitar os pré-requisitos e E2Es reais de cada issue. Dependências de conclusão são cadastradas como bloqueios no GitHub.
 
-1. [Escopo e arquitetura](arquitetura.md)
-2. [Contratos entre módulos](contratos.md)
-3. [Como executar uma issue](execucao.md)
-4. [Backlog modular](backlog.md)
-5. [Segurança e exercícios](seguranca.md)
-6. [Gratuidade e operação](custos.md)
-7. [Trilha de estudos](estudos.md)
-8. [Origens, apps e cobertura completa](origens-e-cobertura.md)
-
-O backlog não usa calendário, datas, duração ou responsáveis fixos. Cada módulo começa com um recorte utilizável e recebe incrementos. Módulos distintos podem ser desenvolvidos em paralelo contra contratos e fixtures, sem exigir serviços de outros membros do time.
-
-Este diretório registra propostas iniciais. Mudanças de contrato e decisões de arquitetura devem ser registradas aqui antes de alterar integrações. O repositório começa somente com documentação e licença; as issues orientam as implementações seguintes.
+Os contratos são propostas até C01/C02/C03 entregarem schemas, fixtures e transporte executáveis. O repositório começa com documentação e licença; nenhuma capacidade está implementada por estar descrita aqui.

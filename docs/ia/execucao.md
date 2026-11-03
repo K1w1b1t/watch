@@ -1,34 +1,34 @@
 # Execução das issues
 
-## Seleção e paralelismo
+## Escolha e dependências
 
-Escolher uma issue sem responsável e sinalizar que vai assumi-la. A primeira issue de cada módulo usa contratos v1 e adaptadores locais; não depende da implementação de outro módulo. Incrementos seguintes dependem somente dos anteriores indicados. Integrações reais têm issues próprias. Não há prazos nem divisão por calendário.
+Escolher issue aberta sem responsável e sinalizar a intenção de assumi-la. Não há datas, duração ou responsáveis fixos. O [backlog](backlog.md) e os bloqueios nativos listam dependências **para concluir**; prototipar com fixtures antes delas é permitido, concluir integração sem componentes exigidos como reais não é.
 
-Uma issue deve ter uma mudança observável, um limite claro e uma demonstração. Se surgirem dois resultados independentes, separar em novas issues. Não transformar uma melhoria de teste em reescrita do módulo inteiro.
+Somente SDKs enviam ao ingresso nesta fase. CLI e apps de exemplo reutilizam SDK; nenhuma nova issue introduz transporte de ingestão paralelo, adaptador de plataforma ou sensor sem decisão explícita de escopo. Issues encerradas como adiadas não são capacidades entregues nem dependências ativas.
+
+Uma issue tem resultado observável, limite e demonstração. Separar resultados independentes; não dividir por arquivo ou por teste. ST03 persiste alertas, ST05 expõe HTTP humano; C02 cria schema, IN04 integra ingresso e SK07 integra SDK. Contratos/fixtures canônicos evitam interfaces concorrentes.
 
 ## TDD e entrega
 
-1. Ler objetivo, contrato, ameaças e critérios da issue.
-2. Escrever um teste que falhe pelo comportamento ausente, incluindo caminho negativo relevante.
-3. Implementar o menor comportamento que passa e refatorar mantendo os testes.
-4. Exercitar o módulo pela entrada pública em E2E local com dependências controladas.
-5. Documentar execução, decisão tomada, limitação e evidência de testes na PR.
+1. Ler objetivo, contrato, ameaça e pré-requisitos de conclusão.
+2. Para código, escrever teste que falha pelo comportamento ausente e caminho negativo relevante.
+3. Implementar o menor comportamento, refatorar e executar os testes relevantes.
+4. Exercitar entrada pública real HTTP/CLI/UI com efeito observável; explicitar cada serviço externo simulado.
+5. Registrar comandos, evidência, decisões e limites na PR; revisão do time verifica a mudança.
 
-Unitário verifica lógica isolada; teste de contrato verifica a fronteira; E2E do módulo entra por HTTP/CLI/UI reais e verifica um efeito observável. O E2E integrado atravessa os serviços reais locais. Simular um serviço externo é permitido no desenvolvimento, mas a PR deve dizer quais componentes foram simulados.
+Unitário testa lógica, contrato testa fronteira, E2E de módulo usa entrada real com dependências controladas e E2E integrado atravessa os componentes locais exigidos. Documento/ADR exige revisão de coerência e exemplos, sem testes artificiais. Aparelho/SO/conta não são exigidos pelo escopo SDK local; provisionamento opcional não pode ser declarado validado só com mock.
 
-## Critério comum de conclusão
+## Conclusão
 
-- Critérios específicos verificados; testes unitários e E2E passam.
-- Sem regressão de contratos ou isolamento de tenant.
-- Nenhum segredo, dado pessoal, estado Terraform ou artefato de laboratório no Git.
-- README do módulo explica como executar e demonstrar, sem conta paga.
-- Erros e falhas de dependências têm comportamento explícito.
-- Issue/PR contém evidência e limitações; uma revisão do time verifica a mudança.
+- Critérios específicos e testes relevantes passam; README explica demonstração e falhas.
+- Isolamento e contratos preservados, incluindo fixtures compartilhadas.
+- Nenhum segredo, dado pessoal, state ou artefato de laboratório no Git/logs/bundle.
+- Dependências de conclusão estão cumpridas; componente real exigido não foi substituído por mock.
+- Perfil integrado é identificado: básico usa apenas limiar medium; ampliado usa apenas correlação high, sem regra low demo.
+- Novo módulo atualiza CI/inventário pertinente; não é necessário instalar scanners para módulos ausentes.
 
-## Uso das descrições
+Não acrescentar piloto/aplicação real, onboarding empresarial, casos de investigação, tuning, backup/restore integrados ou metas empresariais de capacidade/latência como critérios desta fase. OB03 cobre diagnóstico técnico local já previsto; não implica programa de operação empresarial.
 
-As issues devem explicar o raciocínio e o que precisa ser implementado, permitindo que qualquer membro ou assistente ajude a compreender o problema. Elas não entregam a implementação pronta. Dúvidas de contrato devem gerar uma decisão compartilhada, sem inventar interfaces incompatíveis.
+## Modelo de descrição
 
-## Modelo para novas issues
-
-Objetivo e resultado observável; módulo e incremento; dependências; contrato de entrada e saída; o que implementar; fora de escopo; critérios verificáveis; testes unitários e E2E; ameaça/defesa; material de estudo; demonstração e documentação. Não incluir prazo.
+Objetivo/valor; escopo; dependências para concluir; contratos/artefato canônico; comportamento; exclusões; critérios verificáveis; testes/demonstração; segurança; estudo. Linkar issues por número e manter bloqueios nativos coerentes. Mudança de contrato atualiza produtores/consumidores/fixtures na entrega correspondente, sem interface inventada silenciosamente.

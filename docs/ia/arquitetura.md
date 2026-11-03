@@ -1,97 +1,37 @@
 # Escopo e arquitetura
 
-Ver também o [plano geral consolidado](plano-geral.md) e os [diagramas de sistema, identidade e atualização](diagramas.md).
+## Resultado do laboratório
 
-## Resultado inicial
+SDK emite autenticação sintética, ingresso valida e autoriza, core persiste, detector explica sequência e painel consulta/reconhece/resolve alerta. O fluxo é demonstrável sem conta paga; não é uma declaração de prontidão empresarial.
 
-Um evento sintético de autenticação entra no Watch, é validado e armazenado; uma regra explica se há sinal de ataque; um analista consulta o alerta e suas evidências. O fluxo deve continuar demonstrável localmente sem serviços pagos.
+| Componente | Responsabilidade | Limite |
+| --- | --- | --- |
+| SDK TS/Python/Go | Construir/validar evento e enviar por HTTPS/HTTP local | Só observa chamadas explícitas da aplicação |
+| CLI/Next/Nest/backend React | Exemplificar uso do SDK | Sem transporte de ingestão próprio ou API de plataforma |
+| Worker TypeScript | Método/corpo/schema, chave/source, rate limit | Não grava SQLite nem decide tenant pelo body |
+| Core Elixir/Phoenix | API interna, identidade, sources, dados e API humana | Único dono de SQLite local |
+| Detector Elixir | Regras, estado e executor recuperável | Um processo no perfil básico; DE05 testa concorrência local |
+| React | Lista, detalhe e status | Só acessa API autorizada |
+| Outbox | Roteamento e entrega Discord | Retentativa limitada, possível duplicata externa |
+| Exportador/Loki/Grafana | Cópia saneada e visualização opcional | Não substitui AlertStore/autorização |
+| CI/composição local | Reproduzir demonstrações e verificar artefatos | Sem deploy automático ou dados de terceiros |
 
-## Módulos e limites
+## Transporte e autoridade
 
-| Módulo | Responsabilidade | Primeira entrega funcional | Evolução |
-| --- | --- | --- | --- |
-| Ingestão | Receber e normalizar eventos | HTTP local validando um evento | Credenciais, limites e despacho confiável |
-| Identidade | Autenticar máquinas e autorizar acesso | Emissão e verificação local de chave | Revogação, escopos e identidade humana |
-| Armazenamento | Persistir e consultar por tenant | SQLite local com retenção curta | Paginação, expurgo e exportação |
-| Detecção | Transformar eventos em sinais explicáveis | Regra determinística de autenticação | Janela temporal, deduplicação e triagem |
-| Painel | Mostrar alertas e evidências | Lista com fixtures locais | Consulta autenticada e atualização em tempo real |
-| Coletor | Produzir eventos sem coletar dados pessoais | Emissor sintético por CLI | Retry limitado e sensor Linux consentido |
-| Infraestrutura | Reproduzir e proteger o ambiente | Ambiente local isolado | Worker/D1 e VM Oracle opcionais |
-| DevSecOps | Verificar código, dependências e operação | CI dos módulos existentes | SAST, segredos, dependências e exercício integrado |
+C03 (#72) formaliza OpenAPI e ADR local antes das integrações: Worker→core por HTTP interno autenticado, timeout 2s, request_id propagado e falha fechada. Credencial interna não é chave de SDK ou token humano. Eventos entram com tenant derivado da chave; o core revalida source/status. Tenant do envelope público é rejeitado.
+
+SQLite contém autoridade de credenciais, sources, eventos, alertas e outbox no core; só processos do core no mesmo host/volume podem acessá-lo. Worker não compartilha arquivo SQLite e não mantém banco autoritativo paralelo. Em memória só nos modos de teste explicitamente identificados. ST03 é porta persistente, ST05 implementa HTTP humano.
+
+Persistir evento e responder 201/200 precede a análise por executor polling local. Não é necessário executar detector dentro da requisição. DE03 lê por ingest_seq, controla checkpoint/replay e indica lacuna quando retenção remove contexto. Notificação nasce de leitura recuperável do AlertStore, não de callback volátil.
 
 ## Tecnologias propostas
 
-- Ingestão: TypeScript, Cloudflare Workers, Wrangler e Vitest; execução local primeiro.
-- Core: Elixir e ExUnit; Phoenix acrescentado quando a API/streaming justificar. Sem Broadway ou GraphQL no início.
-- Dados: SQLite local; D1 na borda para credenciais/metadados quando houver deploy. Evitar duas fontes de verdade para o mesmo dado.
-- Interface: React, Vite, testes de componentes e Playwright.
-- Produtores: SDK TypeScript server-side, adaptadores Next.js/NestJS, SDKs Python/Go, coletor CLI, app desktop Tauri e app mobile React Native. Cada um começa isolado com receptor local de teste.
-- Saídas: Discord para notificação resumida; Loki/Grafana como exportação e dashboard opcionais. O painel React continua funcionando sem Grafana.
-- Operação: Terraform para os recursos remotos aprovados, contêineres locais, GitHub Actions.
+TypeScript/Workers/Wrangler/Vitest; Elixir/Phoenix/ExUnit/SQLite; React/Vite/Playwright; SDK Python e Go com suíte compartilhada; contêineres locais e GitHub Actions. Terraform apenas nos recursos suportados dos laboratórios opcionais. Nova ferramenta exige ADR curto com problema, alternativas e consequência.
 
-Essas escolhas são propostas: registrar uma decisão curta com problema, opções, escolha e consequência antes de introduzir outra ferramenta.
+## Modos e extensões
 
-## Módulos complementares do sistema
+Local é obrigatório; IF01 começa com perfil mínimo identificado e DS03 usa perfil integrado real. CLI CO01 usa SDK TS, CO02 adiciona retry/fila opcional ao SDK. V1 é autenticação; 1.1 acrescenta heartbeat, acesso negado e analytics explícitos por SDK, sem conectores. IN04 e SK07 comprovam integração dessas versões.
 
-| Módulo | Primeira entrega | Incrementos seguintes |
-| --- | --- | --- |
-| Gestão de fontes | Cadastro manual por tenant | Pareamento individual e heartbeat |
-| SDKs | Envio server-side TypeScript | Next, Nest, browser via backend, Python e Go |
-| Conectores | Adaptadores de origem com fixtures | Supabase, Upstash, PostHog, Vercel e Oracle |
-| Desktop | Tauri Linux com envio sintético | Sensores por SO e lifecycle explícito |
-| Mobile | App Android com envio em primeiro plano | Secure storage, postura, background, iOS e consulta de alertas |
-| Notificações | Alerta no Discord | Entrega com retry e roteamento |
-| Observabilidade | Exportação de alertas para Loki | Dashboard Grafana e cobertura da pipeline |
-| Contas | Matriz de sinais disponíveis | Uma importação de laboratório autenticada |
+Remoto é opcional e começa em IF04. IF02 é smoke de Worker/D1 isolado, sem rota pública v1 nem migração dos dados do core. IF03 prepara Terraform de VM nova dedicada, sem apply. Nenhuma issue atual autoriza ocupar a VPS usada por outros projetos. Publicar smoke Worker não publica o Watch.
 
-O [mapa de origens e cobertura](origens-e-cobertura.md) descreve a visão completa e suas limitações.
-
-## Integrações progressivas
-
-```mermaid
-flowchart LR
-  subgraph Origens
-    WEB[Next e Nest via SDK servidor]
-    B[React browser via backend autorizado]
-    DB[Supabase e Upstash]
-    PH[PostHog e sinais de contas]
-    PC[App desktop Tauri]
-    MB[App mobile React Native]
-    SDK[SDKs Python e Go]
-    OCI[Servicos Oracle e buckets]
-  end
-  B --> WEB
-  WEB --> I[Ingresso autenticado e normalizacao]
-  DB --> C[Adaptadores de origem]
-  PH --> C
-  OCI --> C
-  C --> I
-  PC --> I
-  MB --> I
-  SDK --> I
-  R[Registro de fontes e credenciais] --> I
-  I --> E[Analise e estado temporal consistente]
-  I --> S[Buffer curto de eventos minimizados]
-  E --> A[Alertas e snapshots de evidencia]
-  A --> API[API autorizada]
-  API --> UI[Painel React]
-  API --> MR[Leitura de alertas no mobile]
-  A --> N[Outbox de notificacoes]
-  N --> DC[Discord]
-  A --> X[Exportador servidor]
-  X --> G[Loki e Grafana opcionais]
-```
-
-Primeiro integrar de modo síncrono com interfaces substituíveis. A outbox de notificações é um incremento próprio para sobreviver a falhas de entrega; não exige uma plataforma de filas externa. Resposta de sucesso implica persistência, não apenas envio em background. Se futuramente houver aceite assíncrono, só responder 202 após entrega durável e documentar o caminho de falhas.
-
-O painel nunca consulta Axiom com chave privilegiada nem acessa diretamente o banco. O servidor aplica autorização e tenant em cada consulta e assinatura de canal. WebSockets são um incremento posterior; consulta HTTP já deve funcionar sozinha.
-
-## Fora do escopo inicial
-
-Monetização, Stripe, retenção de anos, dados reais de clientes, consulta de CPF/e-mail em vazamentos, monitoramento de SMS/localização, varredura de contas OAuth, resposta automática destrutiva, alta disponibilidade e promessas de escala. Não é necessário disponibilizar a plataforma publicamente para demonstrar seus módulos.
-
-## Modos de execução
-
-O modo local cobre todos os contratos e exercícios sem serviços pagos. A borda Cloudflare é um deploy opcional, com gate de custo e estado de correlação autoritativo. O core Elixir pode continuar local; deploy remoto requer capacidade gratuita separada. A VPS Oracle que atende outros projetos não é pressuposto nem alvo do Watch. Adotar um modo remoto exige documentar onde roda cada componente e quais dependências permaneceram locais; publicar apenas o Worker não equivale a publicar todo o SOC.
-
-Terraform gerencia recursos suportados pelos providers, bindings, dashboards e configurações. Build de SDKs/apps, assinatura, instalação, consentimento, contas e permissões não são resolvidos por Terraform. Separar provisionamento de infraestrutura, release de binários e onboarding operacional.
+Apps nativos, sensores e adaptadores de plataformas estão adiados. Aplicação de cliente, onboarding empresarial, investigação/casos, tuning operacional, backup/restore integrados e testes de capacidade/latência de produção não são critérios desta fase.
