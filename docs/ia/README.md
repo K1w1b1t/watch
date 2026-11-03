@@ -4,6 +4,10 @@ Construir uma plataforma de segurança em incrementos pequenos, funcionais e ver
 
 ## Leitura
 
+- [Plano geral consolidado](plano-geral.md)
+- [Diagramas Mermaid incorporados](diagramas.md)
+
+
 1. [Escopo e arquitetura](arquitetura.md)
 2. [Contratos entre módulos](contratos.md)
 3. [Como executar uma issue](execucao.md)

@@ -2,6 +2,10 @@
 
 O sistema completo inclui produtores de eventos, provisionamento de fontes, análise, evidências, notificação e visualização. O fluxo local inicial é apenas um recorte desse sistema. Cada linha abaixo corresponde a incrementos no backlog, sem calendário.
 
+## Integração principal via SDK próprio
+
+URL de ingestão e API key individual configuram o transporte server-side ou do sensor nativo. Os produtores enviam diretamente ao Watch, sem Log Drains. Logger, interceptor e adaptador definem quais eventos serão emitidos; não há coleta automática de todos os logs de uma conta. No browser, usar backend autorizado para manter o segredo protegido. Ver [plano geral](plano-geral.md).
+
 ## Mapa de cobertura
 
 | Origem ou capacidade | Entrada inicial | Incrementos planejados | Limitação de cobertura |

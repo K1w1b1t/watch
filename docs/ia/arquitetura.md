@@ -1,5 +1,7 @@
 # Escopo e arquitetura
 
+Ver também o [plano geral consolidado](plano-geral.md) e os [diagramas de sistema, identidade e atualização](diagramas.md).
+
 ## Resultado inicial
 
 Um evento sintético de autenticação entra no Watch, é validado e armazenado; uma regra explica se há sinal de ataque; um analista consulta o alerta e suas evidências. O fluxo deve continuar demonstrável localmente sem serviços pagos.
