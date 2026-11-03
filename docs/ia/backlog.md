@@ -2,7 +2,7 @@
 
 Escopo aprovado em 03/11/2026: ingestão somente por SDKs server-side. CLI usa SDK TS; Next/Nest e React via backend são exemplos. Sem adaptadores de plataformas, agentes, sensores ou apps nativos. Dados sintéticos e laboratório local; piloto empresarial permanece fora desta fase.
 
-52 issues ativas e 24 adiadas. Não há prazo, calendário ou responsável fixo. Protótipos podem começar com contratos/fakes; os pré-requisitos abaixo bloqueiam a **conclusão**, incluindo os E2Es reais explicitados. As descrições e bloqueios nativos no GitHub reproduzem este grafo.
+52 issues ativas. Não há prazo, calendário ou responsável fixo. Protótipos podem começar com contratos/fakes; os pré-requisitos abaixo bloqueiam a **conclusão**, incluindo os E2Es reais explicitados. As descrições e bloqueios nativos no GitHub reproduzem este grafo.
 
 ## Issues ativas
 
@@ -69,37 +69,6 @@ Escopo aprovado em 03/11/2026: ingestão somente por SDKs server-side. CLI usa S
 - **Remoto opcional:** IF04 decide; IF02 faz smoke isolado; IF03 prepara plano sem apply. Não são pré-requisitos para concluir o laboratório local.
 
 Cada módulo atualiza testes/CI relevantes e documentação na própria PR. Não inserir metas de piloto/aplicação real, onboarding empresarial, casos, tuning, backup/restore integrados ou capacidade/latência empresarial. Diagnóstico local OB03 mantém apenas o escopo técnico já previsto.
-
-## Issues adiadas
-
-Encerradas como `not_planned`, sem implementação. A descrição histórica é preservada abaixo do aviso de adiamento no GitHub. Não são dependências de nenhuma issue ativa; reabrir exige decisão explícita de escopo.
-
-| Issue | Motivo |
-| --- | --- |
-| [[CO03] Observar porta local Linux sem privilégios elevados](https://github.com/K1w1b1t/watch/issues/19) | Agente/sensor fora do recorte SDK |
-| [[RG02] Parear um dispositivo com código temporário de uso único](https://github.com/K1w1b1t/watch/issues/28) | Pareamento adiado; SDK recebe chave por configuração server-side |
-| [[CV01] Normalizar eventos instrumentados de projetos Vercel](https://github.com/K1w1b1t/watch/issues/36) | Adaptador de plataforma adiado |
-| [[CS01] Converter resultado Supabase Auth observado no servidor](https://github.com/K1w1b1t/watch/issues/37) | Adaptador de plataforma adiado |
-| [[CS02] Auditar mudança de uma tabela de laboratório sem exportar linhas](https://github.com/K1w1b1t/watch/issues/38) | Adaptador de plataforma adiado |
-| [[CU01] Instrumentar falha Redis sem coletar comandos ou valores](https://github.com/K1w1b1t/watch/issues/39) | Adaptador de plataforma adiado |
-| [[CU02] Consultar estatísticas Upstash com polling limitado](https://github.com/K1w1b1t/watch/issues/40) | Adaptador de plataforma adiado |
-| [[CP01] Receber destination webhook PostHog com allowlist](https://github.com/K1w1b1t/watch/issues/41) | Adaptador de plataforma adiado |
-| [[OC01] Instrumentar falhas de operações de bucket em app de exemplo](https://github.com/K1w1b1t/watch/issues/42) | Adaptador de plataforma adiado |
-| [[DT01] Criar app Tauri Linux com envio sintético explícito](https://github.com/K1w1b1t/watch/issues/43) | Agente/sensor fora do recorte SDK |
-| [[DT02] Parear desktop e guardar credencial fora da camada web](https://github.com/K1w1b1t/watch/issues/44) | Agente/sensor fora do recorte SDK |
-| [[DT03] Acrescentar sensor de portas Linux ao app Tauri](https://github.com/K1w1b1t/watch/issues/45) | Agente/sensor fora do recorte SDK |
-| [[DT04] Adicionar adaptador de portas Windows com fixture e teste nativo](https://github.com/K1w1b1t/watch/issues/46) | Agente/sensor fora do recorte SDK |
-| [[DT05] Adicionar adaptador de portas macOS com fixture e teste nativo](https://github.com/K1w1b1t/watch/issues/47) | Agente/sensor fora do recorte SDK |
-| [[DT06] Pausar coleta e remover configuração de uma instalação](https://github.com/K1w1b1t/watch/issues/48) | Agente/sensor fora do recorte SDK |
-| [[MB01] Criar app Android instalável com envio em primeiro plano](https://github.com/K1w1b1t/watch/issues/49) | Agente/sensor fora do recorte SDK |
-| [[MB02] Parear instalação mobile usando SecureStore](https://github.com/K1w1b1t/watch/issues/50) | Agente/sensor fora do recorte SDK |
-| [[MB03] Enviar postura limitada com resultado desconhecido explícito](https://github.com/K1w1b1t/watch/issues/51) | Agente/sensor fora do recorte SDK |
-| [[MB04] Enviar heartbeat em background oportunista com pausa](https://github.com/K1w1b1t/watch/issues/52) | Agente/sensor fora do recorte SDK |
-| [[MB05] Validar build iOS e matriz de sinais disponíveis](https://github.com/K1w1b1t/watch/issues/53) | Agente/sensor fora do recorte SDK |
-| [[MB06] Consultar alertas pelo app com identidade humana](https://github.com/K1w1b1t/watch/issues/54) | Agente/sensor fora do recorte SDK |
-| [[AC01] Documentar sinais realmente disponíveis de contas e provedores](https://github.com/K1w1b1t/watch/issues/67) | Pesquisa/importação de contas externas adiada |
-| [[AC02] Normalizar um sinal de segurança de conta em laboratório](https://github.com/K1w1b1t/watch/issues/68) | Pesquisa/importação de contas externas adiada |
-| [[IF05] Empacotar release de laboratório de um app com checksums](https://github.com/K1w1b1t/watch/issues/70) | Release de apps adiado |
 
 ## Histórico da revisão
 

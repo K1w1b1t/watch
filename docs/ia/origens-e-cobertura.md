@@ -16,9 +16,9 @@ CO02 adiciona retry/fila opt-in ao SDK TS. SDKs operam com qualquer hospedagem c
 
 Painel React consulta API autorizada. Discord recebe resumo saneado (fake nos E2Es). Loki/Grafana locais são opcionais, com stacks/credenciais separadas para isolamento. São consumidores, não caminhos alternativos de ingestão.
 
-## Adiados
+## Fora do escopo
 
-Conectores/adaptadores Vercel, Supabase, Upstash, PostHog e Oracle; polling/webhooks de plataformas; pesquisa/importação de contas; agentes/sensores Linux/Windows/macOS; apps Android/iOS; pareamento e release de apps. As [issues adiadas](backlog.md#issues-adiadas) preservam o histórico, encerradas como not planned. Nenhum componente ativo depende delas.
+Conectores/adaptadores Vercel, Supabase, Upstash, PostHog e Oracle; polling/webhooks de plataformas; pesquisa/importação de contas; agentes/sensores Linux/Windows/macOS; apps Android/iOS; pareamento e release de apps. O backlog contém somente as entregas do escopo vigente.
 
 ## Laboratório e privacidade
 
