@@ -4,6 +4,8 @@
 
 Escolher issue aberta sem responsável e sinalizar a intenção de assumi-la. Não há datas, duração ou responsáveis fixos. O [backlog](backlog.md) e os bloqueios nativos listam dependências **para concluir**; prototipar com fixtures antes delas é permitido, concluir integração sem componentes exigidos como reais não é.
 
+Para Gustavo e João (`reaperkoji`), a [sugestão de trabalho em dupla](trabalho-em-dupla.md) indica filas complementares e entregas que precisam combinar. Os nomes são sugestões para escolher trabalho, sem alterar assignees ou os bloqueios das issues. Ready no quadro básico não dispensa os pré-requisitos de integração/conclusão.
+
 Somente SDKs enviam ao ingresso nesta fase. CLI e apps de exemplo reutilizam SDK; nenhuma nova issue introduz transporte de ingestão paralelo, adaptador de plataforma ou sensor sem decisão explícita de escopo. Issues fora do escopo são removidas do backlog e não são dependências ativas.
 
 Uma issue tem resultado observável, limite e demonstração. Separar resultados independentes; não dividir por arquivo ou por teste. ST03 persiste alertas, ST05 expõe HTTP humano; C02 cria schema, IN04 integra ingresso e SK07 integra SDK. Contratos/fixtures canônicos evitam interfaces concorrentes.

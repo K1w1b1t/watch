@@ -2,6 +2,8 @@
 
 O número da issue e o código do módulo não indicam prioridade. A sequência abaixo deriva dos bloqueios do [backlog](backlog.md), com dois resultados verificáveis: primeiro DS03, depois DS04.
 
+Para escolherem tarefas complementares, Gustavo e João (`reaperkoji`) podem seguir a [sugestão de trabalho em dupla](trabalho-em-dupla.md), com uma fila para cada um e pontos de integração. É uma sugestão ajustável, sem responsáveis fixos.
+
 ## Por onde começar
 
 Enquanto nenhuma issue estiver concluída, **C01 #1 e DS01 #23 são as únicas sem pré-requisitos**. C01 libera os contratos usados pelo restante; DS01 prepara CI em paralelo. Depois de C01, priorizar C03 #72 para liberar identidade, armazenamento e composição local; SDK, ingresso, regra pura e painel com fixtures podem seguir em paralelo.
@@ -62,7 +64,7 @@ IF04/IF02/IF03 são experimentos remotos opcionais dentro do escopo. Não é nec
 
 ## Leitura recomendada no Kanban
 
-O Status acompanha execução; a entrega e a rodada explicam prioridade e dependências. Uma issue de rodada maior não está necessariamente em andamento ou pronta.
+O Status acompanha execução; a entrega e a rodada explicam prioridade e dependências. As 23 issues básicas foram marcadas como Ready por escolha do time: isso seleciona a entrega, mas não remove os bloqueios técnicos. Uma issue de rodada maior não está necessariamente liberada para integração.
 
 | Informação | Uso no quadro |
 | --- | --- |
@@ -71,4 +73,4 @@ O Status acompanha execução; a entrega e a rodada explicam prioridade e depend
 | Status | A fazer, Em andamento e Concluído, preservando os nomes usados pelo time |
 | Bloqueios | Conferir os pré-requisitos nativos antes de assumir integração; não usar número da issue como ordem |
 
-Na visão diária, filtrar o fluxo básico primeiro e ordenar por rodada. Na visão geral, agrupar por entrega e mostrar rodada, módulo e status nos cartões. Quando DS03 concluir, usar o mesmo procedimento no fluxo ampliado. Essa é a configuração recomendada; alterações efetivamente aplicadas ao Projects dependem do acesso ao quadro.
+Na visão diária, filtrar o fluxo básico primeiro e ordenar por rodada. Na visão geral, agrupar por entrega e mostrar rodada, módulo e status nos cartões. Quando DS03 concluir, usar o mesmo procedimento no fluxo ampliado. A configuração de Entrega/Rodada é uma sugestão de visualização; a alteração aplicada ao Projects até aqui foi colocar as 23 issues básicas em Ready.
