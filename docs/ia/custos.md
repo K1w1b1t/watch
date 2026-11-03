@@ -1,26 +1,55 @@
-# Custos e operação do laboratório
+# Como executar sem depender de recurso pago
 
-Execução local sem conta paga é requisito. Gratuidade remota depende de plano/cota elegível e não garante custo zero em qualquer escala. Esta documentação não certifica preços atuais; revalidar e datar fontes oficiais durante IF04.
+**Este documento responde:** quais recursos são necessários ao laboratório e quais cuidados precedem os exercícios remotos opcionais.
 
-| Recurso | Uso atual | Condição |
+## O caminho principal é local
+
+Para demonstrar DS03/DS04, a base é executar os programas do Watch, SQLite e, no segundo roteiro, Loki/Grafana na própria máquina. Os exemplos usam dados fictícios. O Discord é imitado por um servidor HTTP local nos testes.
+
+Os READMEs dos módulos devem trazer os comandos reais de execução quando forem implementados. Neste momento não há comando único de instalação pronto: IF01 constrói a composição local.
+
+| Recurso | Por que está no projeto | Precisa de conta externa para a demonstração local? |
 | --- | --- | --- |
-| Local, contêineres e SQLite | Base obrigatória | Volume privado e recursos limitados |
-| Workers/D1 | Smoke test opcional IF02 | Isolado, sem migrar dados/identidade nem publicar ingestão real |
-| VM remota nova dedicada | Plano opcional IF03 | Sem apply nesta issue; nunca ocupar VPS existente |
-| Emissor/JWKS local | Identidade demo ID03 | Não equivale a IdP/MFA empresarial |
-| Discord fake | Notificação nos E2Es | Nenhuma conta real exigida |
-| Loki/Grafana locais | Saída opcional | Sem serviço cloud obrigatório |
+| Contêineres/processos locais | Subir entrada, servidor, detector e painel | Não |
+| SQLite em volume privado | Manter dados após reinício | Não |
+| Emissor humano local | Testar sessão/papéis do painel | Não |
+| Servidor Discord falso | Testar mensagem e falha de entrega | Não |
+| Loki/Grafana locais | Consultar e mostrar alertas exportados | Não |
+| Worker/D1 remoto de IF02 | Exercício separado de infraestrutura | Sim, só se a conta for elegível |
+| Máquina remota de IF03 | Preparar um plano de infraestrutura | Credenciais podem ser necessárias para plan; esta issue não cria a máquina |
 
-## Gate remoto
+## O que cada issue remota faz
 
-IF04 decide topologia completa antes de IF02/IF03: componente, autoridade dos dados, TLS, credencial, plano/cota, consumo compartilhado e remoção. Somar disco, IP, tráfego, state, logs e qualquer dependência; não depender de créditos/trials. Sem limite compatível ou capacidade elegível, manter local. Alertas de orçamento não bloqueiam cobrança.
+1. **IF04:** decidir onde cada componente ficaria, consultar condições oficiais e documentar custos/limites antes de criar qualquer coisa.
+2. **IF02:** testar apenas marcador fictício em Worker/D1 isolados. Isso não publica a entrada do Watch nem migra seu banco.
+3. **IF03:** preparar a configuração de uma máquina nova dedicada e revisar o plano, sem executar apply.
 
-Terraform plan revisável, state/segredos fora do Git, menor privilégio e teardown restrito aos recursos Watch. Nenhum domínio pago, alteração de outros projetos ou upgrade automático. IF02 só declara provisionamento testado após E2E remoto; inelegibilidade deixa essa validação pendente. IF03 entrega preparação validada, não deploy ou restore implementado.
+Essas tarefas não bloqueiam o laboratório local. A VPS que já atende outros projetos não é um recurso disponível para o Watch.
 
-## Limites internos
+## Antes de criar recurso remoto
 
-Um evento/POST até 16 KiB; 10 requisições/min/credencial por processo inicialmente; buffer 24h, até 10.000 eventos ou 10 MiB JSON canônico/tenant; snapshots 7 dias ou 10 MiB/tenant. São limites de laboratório detalhados nos contratos, sem promessa de capacidade empresarial. IF04 define eventual orçamento remoto verificável antes de execução.
+Quem executar IF04 deve registrar data, plano/cotas, consumo já existente na conta, recurso pretendido, limite verificável e forma de remover. Conferir disco, IP, tráfego, registros, estado e outras dependências — não apenas CPU.
 
-SDK TS tem timeout 2s e fila/retry opcionais limitados; fila em memória perde ao reiniciar. Python/Go começam sem fila/retry. Não ampliar plano ao saturar: rejeitar explicitamente conforme contrato. Nenhum SDK exige plataforma específica de hospedagem.
+Não usar créditos/trials temporários como se fossem gratuidade permanente nem ativar upgrade automático. Se não houver opção elegível com limite compatível, continuar localmente. Alerta de orçamento avisa; não necessariamente impede cobrança.
 
-Axiom, R2 e outros destinos cloud continuam pesquisa futura. Adaptadores de plataformas e apps nativos estão adiados, portanto seus planos/distribuição não são pré-requisitos. Backup/restore integrados e prontidão empresarial não fazem parte desta fase.
+Esta documentação não certifica preços atuais. A pessoa que implementar a issue precisa consultar e datar as condições oficiais do serviço naquele momento.
+
+## Como trabalhar com Terraform
+
+`plan` mostra a prévia; `apply` executa a mudança; `state` registra os recursos controlados. Revisar o plano antes de aplicar, manter state/segredos fora do Git e usar credencial de menor privilégio.
+
+A remoção deve alcançar apenas os recursos Watch. Não criar domínio pago, alterar outros projetos ou declarar provisionamento testado com base apenas numa simulação.
+
+## Por que temos limites também no ambiente local
+
+Limites tornam o comportamento previsível e permitem testar saturação sem carga ilimitada. A referência exata está no [contrato](contratos.md#5-limites-de-pedidos-e-armazenamento).
+
+| Recurso controlado | Valor inicial |
+| --- | --- |
+| Evento por pedido | 1, até 16 KiB |
+| Pedidos autenticados por chave | 10/minuto no processo inicial |
+| Buffer de cada organização | 24h, até 10.000 eventos ou 10 MiB de JSON |
+| Cópias de evidência por organização | Até 7 dias ou 10 MiB |
+| Espera do SDK por tentativa | 2 segundos |
+
+O SDK TS ganha fila/reenvio opcional em CO02, com limites explícitos e perda de fila em reinício. Python/Go começam com envio unitário. Saturar um limite deve gerar resultado conhecido, não aumentar plano ou memória sem controle.

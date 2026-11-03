@@ -1,73 +1,100 @@
-# Backlog modular vigente
+# Backlog: encontre a tarefa pelo resultado
 
-Escopo aprovado em 03/11/2026: ingestão somente por SDKs server-side. CLI usa SDK TS; Next/Nest e React via backend são exemplos. Sem adaptadores de plataformas, agentes, sensores ou apps nativos. Dados sintéticos e laboratório local; piloto empresarial permanece fora desta fase.
+**Use este arquivo como índice das 52 issues.** Para escolher uma sequência, consulte a [ordem de execução](ordem-execucao.md). Para repartir entre vocês, use [trabalho em dupla](trabalho-em-dupla.md).
 
-52 issues ativas. Não há prazo, calendário ou responsável fixo. Protótipos podem começar com contratos/fakes; os pré-requisitos abaixo bloqueiam a **conclusão**, incluindo os E2Es reais explicitados. As descrições e bloqueios nativos no GitHub reproduzem este grafo.
+O código entre colchetes identifica a área; o número identifica a issue no GitHub. Nenhum dos dois, sozinho, indica prioridade.
 
-## Issues ativas
+| Código | Área |
+| --- | --- |
+| C | Contratos: formato e comunicação combinados |
+| IN | Entrada: receber e validar pedidos |
+| ID | Identidade: chaves e acesso humano |
+| RG | Registro: fontes, contato e vínculos |
+| ST | Armazenamento: eventos, alertas, evidências e API |
+| DE | Detecção: regras e processamento |
+| SK | SDK: bibliotecas de envio e exemplos de aplicação |
+| CO | Demonstração por terminal e opções de envio do SDK |
+| UI | Interface: painel para pessoas |
+| NT | Notificação: mensagem, fila e destino |
+| OB | Observação técnica: exportação, gráficos e medidas de funcionamento |
+| IF | Infraestrutura: ambiente local e exercícios remotos opcionais |
+| DS | Verificações: CI, segurança e demonstrações completas |
 
-A tabela abaixo é referência por módulo/código. Para a sequência de trabalho e o paralelismo, usar a [ordem de execução](ordem-execucao.md).
+“Precisa de” lista as entregas necessárias para concluir a tarefa. É permitido começar com substitutos de teste; a integração final respeita os bloqueios reais. Não há prazo ou responsável fixo.
 
-| Código | Módulo | Resultado | Pré-requisitos para concluir |
-| --- | --- | --- | --- |
-| [C01](https://github.com/K1w1b1t/watch/issues/1) | contratos | Formalizar contratos v1 e fixtures compartilhadas | Nenhum |
-| [IN01](https://github.com/K1w1b1t/watch/issues/2) | ingestao | Receber evento HTTP v1 com adaptadores locais | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [IN02](https://github.com/K1w1b1t/watch/issues/3) | ingestao | Aplicar autorização e rate limit no ingresso | [IN01](https://github.com/K1w1b1t/watch/issues/2) |
-| [IN03](https://github.com/K1w1b1t/watch/issues/4) | ingestao | Integrar ingresso aos serviços persistentes do core | [IN02](https://github.com/K1w1b1t/watch/issues/3), [ID01](https://github.com/K1w1b1t/watch/issues/5), [ST01](https://github.com/K1w1b1t/watch/issues/8), [RG01](https://github.com/K1w1b1t/watch/issues/27), [C03](https://github.com/K1w1b1t/watch/issues/72) |
-| [ID01](https://github.com/K1w1b1t/watch/issues/5) | identidade | Emitir e verificar chaves de SDK no core local | [C01](https://github.com/K1w1b1t/watch/issues/1), [C03](https://github.com/K1w1b1t/watch/issues/72) |
-| [ID02](https://github.com/K1w1b1t/watch/issues/6) | identidade | Revogar e rotacionar chaves de SDK | [ID01](https://github.com/K1w1b1t/watch/issues/5) |
-| [ID03](https://github.com/K1w1b1t/watch/issues/7) | identidade | Validar identidade humana e papéis no laboratório | [C01](https://github.com/K1w1b1t/watch/issues/1), [C03](https://github.com/K1w1b1t/watch/issues/72) |
-| [ST01](https://github.com/K1w1b1t/watch/issues/8) | armazenamento | Persistir eventos isolados e idempotentes em SQLite | [C01](https://github.com/K1w1b1t/watch/issues/1), [C03](https://github.com/K1w1b1t/watch/issues/72) |
-| [ST02](https://github.com/K1w1b1t/watch/issues/9) | armazenamento | Aplicar retenção e limites de volume ao buffer | [ST01](https://github.com/K1w1b1t/watch/issues/8) |
-| [ST03](https://github.com/K1w1b1t/watch/issues/10) | armazenamento | Persistir alertas e referências de evidência por tenant | [ST01](https://github.com/K1w1b1t/watch/issues/8) |
-| [DE01](https://github.com/K1w1b1t/watch/issues/11) | deteccao | Demonstrar regra pura de falha de autenticação | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [DE02](https://github.com/K1w1b1t/watch/issues/12) | deteccao | Detectar cinco falhas em janela e deduplicar sinais | [DE01](https://github.com/K1w1b1t/watch/issues/11) |
-| [DE03](https://github.com/K1w1b1t/watch/issues/13) | deteccao | Processar eventos persistidos com checkpoint e replay seguro | [DE02](https://github.com/K1w1b1t/watch/issues/12), [ST02](https://github.com/K1w1b1t/watch/issues/9), [ST03](https://github.com/K1w1b1t/watch/issues/10) |
-| [UI01](https://github.com/K1w1b1t/watch/issues/14) | painel | Exibir lista e detalhe de alertas com fixtures | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [UI02](https://github.com/K1w1b1t/watch/issues/15) | painel | Consultar API autenticada e alterar status de alertas | [UI01](https://github.com/K1w1b1t/watch/issues/14), [ST05](https://github.com/K1w1b1t/watch/issues/73) |
-| [UI03](https://github.com/K1w1b1t/watch/issues/16) | painel | Atualizar alertas por Phoenix Channel autenticado | [UI02](https://github.com/K1w1b1t/watch/issues/15) |
-| [CO01](https://github.com/K1w1b1t/watch/issues/17) | sdk-typescript | Demonstrar envio pela CLI usando o SDK TypeScript | [SK01](https://github.com/K1w1b1t/watch/issues/30) |
-| [CO02](https://github.com/K1w1b1t/watch/issues/18) | sdk-typescript | Adicionar retry e fila limitada ao SDK TypeScript | [SK01](https://github.com/K1w1b1t/watch/issues/30) |
-| [IF01](https://github.com/K1w1b1t/watch/issues/20) | infraestrutura | Reproduzir composição local do Watch com volumes isolados | [C03](https://github.com/K1w1b1t/watch/issues/72) |
-| [IF02](https://github.com/K1w1b1t/watch/issues/21) | infraestrutura | Validar laboratório isolado Worker e D1 com Terraform | [IF04](https://github.com/K1w1b1t/watch/issues/69) |
-| [IF03](https://github.com/K1w1b1t/watch/issues/22) | infraestrutura | Preparar plano Terraform opcional para core remoto | [IF04](https://github.com/K1w1b1t/watch/issues/69) |
-| [DS01](https://github.com/K1w1b1t/watch/issues/23) | devsecops | Executar testes existentes e scanner de segredos em PRs | Nenhum |
-| [DS02](https://github.com/K1w1b1t/watch/issues/24) | devsecops | Adicionar SCA e análise dos artefatos presentes | [DS01](https://github.com/K1w1b1t/watch/issues/23) |
-| [DS03](https://github.com/K1w1b1t/watch/issues/25) | devsecops | Validar fluxo local do SDK até triagem do alerta | [IN03](https://github.com/K1w1b1t/watch/issues/4), [ID02](https://github.com/K1w1b1t/watch/issues/6), [DE03](https://github.com/K1w1b1t/watch/issues/13), [UI02](https://github.com/K1w1b1t/watch/issues/15), [CO01](https://github.com/K1w1b1t/watch/issues/17), [IF01](https://github.com/K1w1b1t/watch/issues/20), [ST04](https://github.com/K1w1b1t/watch/issues/61) |
-| [C02](https://github.com/K1w1b1t/watch/issues/26) | contratos | Formalizar eventos 1.1 emitidos por SDKs | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [RG01](https://github.com/K1w1b1t/watch/issues/27) | fontes | Cadastrar consultar e desabilitar sources de SDK | [ID03](https://github.com/K1w1b1t/watch/issues/7), [C03](https://github.com/K1w1b1t/watch/issues/72) |
-| [RG03](https://github.com/K1w1b1t/watch/issues/29) | fontes | Mostrar último contato e cobertura de sources de SDK | [RG01](https://github.com/K1w1b1t/watch/issues/27), [IN04](https://github.com/K1w1b1t/watch/issues/74) |
-| [SK01](https://github.com/K1w1b1t/watch/issues/30) | sdk-typescript | Enviar eventos v1 com SDK TypeScript server-side | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [SK02](https://github.com/K1w1b1t/watch/issues/31) | sdk-typescript | Demonstrar SDK numa rota Next.js server-side | [SK01](https://github.com/K1w1b1t/watch/issues/30) |
-| [SK03](https://github.com/K1w1b1t/watch/issues/32) | sdk-typescript | Demonstrar acesso negado NestJS pelo SDK | [SK07](https://github.com/K1w1b1t/watch/issues/75) |
-| [SK04](https://github.com/K1w1b1t/watch/issues/33) | sdk-typescript | Demonstrar sinal React via backend e SDK server-side | [SK07](https://github.com/K1w1b1t/watch/issues/75) |
-| [SK05](https://github.com/K1w1b1t/watch/issues/34) | sdk-python | Enviar eventos v1 com SDK Python | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [SK06](https://github.com/K1w1b1t/watch/issues/35) | sdk-go | Enviar eventos v1 com SDK Go | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [NT01](https://github.com/K1w1b1t/watch/issues/55) | notificacoes | Formatar e enviar alerta resumido ao Discord | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [NT02](https://github.com/K1w1b1t/watch/issues/56) | notificacoes | Integrar AlertStore à outbox durável de notificações | [NT01](https://github.com/K1w1b1t/watch/issues/55), [ST03](https://github.com/K1w1b1t/watch/issues/10) |
-| [NT03](https://github.com/K1w1b1t/watch/issues/57) | notificacoes | Rotear notificações por tenant com cooldown | [NT02](https://github.com/K1w1b1t/watch/issues/56) |
-| [OB01](https://github.com/K1w1b1t/watch/issues/58) | observabilidade | Exportar alertas saneados do Watch para Loki | [ST03](https://github.com/K1w1b1t/watch/issues/10) |
-| [OB02](https://github.com/K1w1b1t/watch/issues/59) | observabilidade | Provisionar dashboard Grafana para Loki local | [OB01](https://github.com/K1w1b1t/watch/issues/58) |
-| [OB03](https://github.com/K1w1b1t/watch/issues/60) | observabilidade | Instrumentar métricas locais de falhas e entrega | [IN03](https://github.com/K1w1b1t/watch/issues/4), [DE03](https://github.com/K1w1b1t/watch/issues/13), [NT02](https://github.com/K1w1b1t/watch/issues/56) |
-| [ST04](https://github.com/K1w1b1t/watch/issues/61) | armazenamento | Preservar snapshots mínimos no caminho de criação de alerta | [ST02](https://github.com/K1w1b1t/watch/issues/9), [ST03](https://github.com/K1w1b1t/watch/issues/10) |
-| [DE04](https://github.com/K1w1b1t/watch/issues/62) | deteccao | Carregar catálogo fechado de regras versionadas | [DE02](https://github.com/K1w1b1t/watch/issues/12) |
-| [DE05](https://github.com/K1w1b1t/watch/issues/63) | deteccao | Persistir estado temporal atômico entre processos locais | [DE03](https://github.com/K1w1b1t/watch/issues/13) |
-| [DE06](https://github.com/K1w1b1t/watch/issues/64) | deteccao | Correlacionar falhas e sucesso entre sources de SDK | [DE03](https://github.com/K1w1b1t/watch/issues/13), [RG04](https://github.com/K1w1b1t/watch/issues/76) |
-| [DE07](https://github.com/K1w1b1t/watch/issues/65) | deteccao | Calcular score explicável por regras locais | [DE04](https://github.com/K1w1b1t/watch/issues/62) |
-| [DE08](https://github.com/K1w1b1t/watch/issues/66) | deteccao | Importar seleção Sigma para template de igualdade | [DE04](https://github.com/K1w1b1t/watch/issues/62) |
-| [IF04](https://github.com/K1w1b1t/watch/issues/69) | infraestrutura | Decidir topologia remota opcional e gate de custo | [C03](https://github.com/K1w1b1t/watch/issues/72) |
-| [DS04](https://github.com/K1w1b1t/watch/issues/71) | devsecops | Validar múltiplos SDKs até Discord fake e Grafana locais | [IN03](https://github.com/K1w1b1t/watch/issues/4), [ID02](https://github.com/K1w1b1t/watch/issues/6), [DE03](https://github.com/K1w1b1t/watch/issues/13), [IF01](https://github.com/K1w1b1t/watch/issues/20), [RG03](https://github.com/K1w1b1t/watch/issues/29), [SK05](https://github.com/K1w1b1t/watch/issues/34), [SK06](https://github.com/K1w1b1t/watch/issues/35), [NT03](https://github.com/K1w1b1t/watch/issues/57), [OB02](https://github.com/K1w1b1t/watch/issues/59), [ST04](https://github.com/K1w1b1t/watch/issues/61), [DE05](https://github.com/K1w1b1t/watch/issues/63), [DE06](https://github.com/K1w1b1t/watch/issues/64), [SK07](https://github.com/K1w1b1t/watch/issues/75) |
-| [C03](https://github.com/K1w1b1t/watch/issues/72) | contratos | Definir topologia local e contratos HTTP entre ingresso e core | [C01](https://github.com/K1w1b1t/watch/issues/1) |
-| [ST05](https://github.com/K1w1b1t/watch/issues/73) | armazenamento | Expor API autorizada de alertas e triagem local | [ST03](https://github.com/K1w1b1t/watch/issues/10), [ID03](https://github.com/K1w1b1t/watch/issues/7), [C03](https://github.com/K1w1b1t/watch/issues/72) |
-| [IN04](https://github.com/K1w1b1t/watch/issues/74) | ingestao | Aceitar contrato 1.1 no ingresso e no armazenamento | [C02](https://github.com/K1w1b1t/watch/issues/26), [IN03](https://github.com/K1w1b1t/watch/issues/4) |
-| [SK07](https://github.com/K1w1b1t/watch/issues/75) | sdk-typescript | Enviar eventos 1.1 pelo SDK TypeScript | [IN04](https://github.com/K1w1b1t/watch/issues/74), [SK01](https://github.com/K1w1b1t/watch/issues/30) |
-| [RG04](https://github.com/K1w1b1t/watch/issues/76) | fontes | Configurar vínculos autorizados entre sources de SDK | [RG01](https://github.com/K1w1b1t/watch/issues/27) |
+## Fluxo básico — 23 issues
 
-## Marcos por capacidade
+O objetivo é fechar DS03: enviar pelo SDK TS e ver/tratar um alerta no painel.
 
-- **Contrato compartilhado:** C01 e C03; evolução 1.1 em C02, IN04 e SK07.
-- **Fluxo básico demonstrável:** DS03, SDK TS→ingresso→core→detector medium→API→painel; inclui revogação, replay e evidência mínima.
-- **Fluxo ampliado demonstrável:** DS04, SDKs Python/Go com fontes vinculadas→high→Discord fake e Loki/Grafana locais; heartbeat TS para cobertura.
-- **Remoto opcional:** IF04 decide; IF02 faz smoke isolado; IF03 prepara plano sem apply. Não são pré-requisitos para concluir o laboratório local.
+| Issue | O que você constrói | Precisa de |
+| --- | --- | --- |
+| [C01 #1](https://github.com/K1w1b1t/watch/issues/1) | Definir o formato dos eventos e criar exemplos para todos os módulos | Nenhuma outra issue |
+| [IN01 #2](https://github.com/K1w1b1t/watch/issues/2) | Receber um evento por HTTP e validar seus dados | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [DE01 #11](https://github.com/K1w1b1t/watch/issues/11) | Criar uma primeira regra simples para aprender o caminho da detecção | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [UI01 #14](https://github.com/K1w1b1t/watch/issues/14) | Montar o painel de alertas usando exemplos locais | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [SK01 #30](https://github.com/K1w1b1t/watch/issues/30) | Criar o SDK TypeScript para enviar eventos de login | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [C03 #72](https://github.com/K1w1b1t/watch/issues/72) | Definir como a entrada em TypeScript conversa com o servidor Elixir | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [IN02 #3](https://github.com/K1w1b1t/watch/issues/3) | Controlar quem pode enviar eventos e limitar a quantidade de pedidos | [IN01 #2](https://github.com/K1w1b1t/watch/issues/2) |
+| [ID01 #5](https://github.com/K1w1b1t/watch/issues/5) | Criar e verificar chaves de acesso dos SDKs | [C01 #1](https://github.com/K1w1b1t/watch/issues/1), [C03 #72](https://github.com/K1w1b1t/watch/issues/72) |
+| [ID03 #7](https://github.com/K1w1b1t/watch/issues/7) | Permitir acesso de pessoas com papéis de leitura e análise | [C01 #1](https://github.com/K1w1b1t/watch/issues/1), [C03 #72](https://github.com/K1w1b1t/watch/issues/72) |
+| [ST01 #8](https://github.com/K1w1b1t/watch/issues/8) | Guardar eventos no SQLite sem misturar organizações nem duplicar reenvios | [C01 #1](https://github.com/K1w1b1t/watch/issues/1), [C03 #72](https://github.com/K1w1b1t/watch/issues/72) |
+| [DE02 #12](https://github.com/K1w1b1t/watch/issues/12) | Detectar cinco falhas de login em um intervalo de 60 segundos | [DE01 #11](https://github.com/K1w1b1t/watch/issues/11) |
+| [CO01 #17](https://github.com/K1w1b1t/watch/issues/17) | Criar um comando de terminal para demonstrar o SDK TypeScript | [SK01 #30](https://github.com/K1w1b1t/watch/issues/30) |
+| [IF01 #20](https://github.com/K1w1b1t/watch/issues/20) | Preparar um ambiente local que sobe os componentes do Watch juntos | [C03 #72](https://github.com/K1w1b1t/watch/issues/72) |
+| [ID02 #6](https://github.com/K1w1b1t/watch/issues/6) | Revogar e substituir chaves de acesso | [ID01 #5](https://github.com/K1w1b1t/watch/issues/5) |
+| [ST02 #9](https://github.com/K1w1b1t/watch/issues/9) | Limitar por quanto tempo e quanto volume de eventos ficam guardados | [ST01 #8](https://github.com/K1w1b1t/watch/issues/8) |
+| [ST03 #10](https://github.com/K1w1b1t/watch/issues/10) | Guardar alertas e ligar cada alerta aos eventos que o explicam | [ST01 #8](https://github.com/K1w1b1t/watch/issues/8) |
+| [RG01 #27](https://github.com/K1w1b1t/watch/issues/27) | Cadastrar e desativar as aplicações que podem enviar eventos | [ID03 #7](https://github.com/K1w1b1t/watch/issues/7), [C03 #72](https://github.com/K1w1b1t/watch/issues/72) |
+| [IN03 #4](https://github.com/K1w1b1t/watch/issues/4) | Conectar a entrada ao servidor e ao banco reais | [IN02 #3](https://github.com/K1w1b1t/watch/issues/3), [ID01 #5](https://github.com/K1w1b1t/watch/issues/5), [ST01 #8](https://github.com/K1w1b1t/watch/issues/8), [RG01 #27](https://github.com/K1w1b1t/watch/issues/27), [C03 #72](https://github.com/K1w1b1t/watch/issues/72) |
+| [DE03 #13](https://github.com/K1w1b1t/watch/issues/13) | Ler eventos do banco e retomar a análise depois de uma interrupção | [DE02 #12](https://github.com/K1w1b1t/watch/issues/12), [ST02 #9](https://github.com/K1w1b1t/watch/issues/9), [ST03 #10](https://github.com/K1w1b1t/watch/issues/10) |
+| [ST04 #61](https://github.com/K1w1b1t/watch/issues/61) | Preservar os eventos que explicam um alerta mesmo após a limpeza do buffer | [ST02 #9](https://github.com/K1w1b1t/watch/issues/9), [ST03 #10](https://github.com/K1w1b1t/watch/issues/10) |
+| [ST05 #73](https://github.com/K1w1b1t/watch/issues/73) | Criar a API que o painel usa para consultar e tratar alertas | [ST03 #10](https://github.com/K1w1b1t/watch/issues/10), [ID03 #7](https://github.com/K1w1b1t/watch/issues/7), [C03 #72](https://github.com/K1w1b1t/watch/issues/72) |
+| [UI02 #15](https://github.com/K1w1b1t/watch/issues/15) | Ligar o painel à API e permitir reconhecer e resolver alertas | [UI01 #14](https://github.com/K1w1b1t/watch/issues/14), [ST05 #73](https://github.com/K1w1b1t/watch/issues/73) |
+| [DS03 #25](https://github.com/K1w1b1t/watch/issues/25) | Demonstrar o caminho completo: enviar eventos e tratar o alerta no painel | [IN03 #4](https://github.com/K1w1b1t/watch/issues/4), [ID02 #6](https://github.com/K1w1b1t/watch/issues/6), [DE03 #13](https://github.com/K1w1b1t/watch/issues/13), [UI02 #15](https://github.com/K1w1b1t/watch/issues/15), [CO01 #17](https://github.com/K1w1b1t/watch/issues/17), [IF01 #20](https://github.com/K1w1b1t/watch/issues/20), [ST04 #61](https://github.com/K1w1b1t/watch/issues/61) |
 
-Cada módulo atualiza testes/CI relevantes e documentação na própria PR. Não inserir metas de piloto/aplicação real, onboarding empresarial, casos, tuning, backup/restore integrados ou capacidade/latência empresarial. Diagnóstico local OB03 mantém apenas o escopo técnico já previsto.
+## Fluxo ampliado — 15 issues
+
+Depois do básico, fechar DS04: fontes Python/Go vinculadas, alerta high e saídas locais.
+
+| Issue | O que você constrói | Precisa de |
+| --- | --- | --- |
+| [C02 #26](https://github.com/K1w1b1t/watch/issues/26) | Definir três novos tipos de evento para a versão 1.1 | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [SK05 #34](https://github.com/K1w1b1t/watch/issues/34) | Criar o SDK Python para o mesmo contrato de login | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [SK06 #35](https://github.com/K1w1b1t/watch/issues/35) | Criar o SDK Go com envio cancelável | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [NT01 #55](https://github.com/K1w1b1t/watch/issues/55) | Preparar uma mensagem segura de alerta para o Discord | [C01 #1](https://github.com/K1w1b1t/watch/issues/1) |
+| [OB01 #58](https://github.com/K1w1b1t/watch/issues/58) | Copiar resumos de alertas para consulta no Loki | [ST03 #10](https://github.com/K1w1b1t/watch/issues/10) |
+| [DE05 #63](https://github.com/K1w1b1t/watch/issues/63) | Compartilhar o estado da detecção entre dois processos locais com segurança | [DE03 #13](https://github.com/K1w1b1t/watch/issues/13) |
+| [RG04 #76](https://github.com/K1w1b1t/watch/issues/76) | Registrar quais aplicações podem correlacionar a mesma pessoa fictícia | [RG01 #27](https://github.com/K1w1b1t/watch/issues/27) |
+| [NT02 #56](https://github.com/K1w1b1t/watch/issues/56) | Guardar notificações pendentes e retomar o envio após falhas | [NT01 #55](https://github.com/K1w1b1t/watch/issues/55), [ST03 #10](https://github.com/K1w1b1t/watch/issues/10) |
+| [OB02 #59](https://github.com/K1w1b1t/watch/issues/59) | Montar um painel Grafana para os alertas enviados ao Loki | [OB01 #58](https://github.com/K1w1b1t/watch/issues/58) |
+| [DE06 #64](https://github.com/K1w1b1t/watch/issues/64) | Detectar falhas seguidas de sucesso entre aplicações vinculadas | [DE03 #13](https://github.com/K1w1b1t/watch/issues/13), [RG04 #76](https://github.com/K1w1b1t/watch/issues/76) |
+| [IN04 #74](https://github.com/K1w1b1t/watch/issues/74) | Fazer o servidor aceitar eventos 1.1 sem quebrar a versão 1 | [C02 #26](https://github.com/K1w1b1t/watch/issues/26), [IN03 #4](https://github.com/K1w1b1t/watch/issues/4) |
+| [RG03 #29](https://github.com/K1w1b1t/watch/issues/29) | Mostrar quando uma fonte enviou dados pela última vez | [RG01 #27](https://github.com/K1w1b1t/watch/issues/27), [IN04 #74](https://github.com/K1w1b1t/watch/issues/74) |
+| [NT03 #57](https://github.com/K1w1b1t/watch/issues/57) | Enviar cada alerta ao destino certo e reduzir avisos repetidos | [NT02 #56](https://github.com/K1w1b1t/watch/issues/56) |
+| [SK07 #75](https://github.com/K1w1b1t/watch/issues/75) | Adicionar os eventos 1.1 ao SDK TypeScript e testar com o Watch real | [IN04 #74](https://github.com/K1w1b1t/watch/issues/74), [SK01 #30](https://github.com/K1w1b1t/watch/issues/30) |
+| [DS04 #71](https://github.com/K1w1b1t/watch/issues/71) | Demonstrar SDKs diferentes gerando um alerta com notificação e gráfico | [IN03 #4](https://github.com/K1w1b1t/watch/issues/4), [ID02 #6](https://github.com/K1w1b1t/watch/issues/6), [DE03 #13](https://github.com/K1w1b1t/watch/issues/13), [IF01 #20](https://github.com/K1w1b1t/watch/issues/20), [RG03 #29](https://github.com/K1w1b1t/watch/issues/29), [SK05 #34](https://github.com/K1w1b1t/watch/issues/34), [SK06 #35](https://github.com/K1w1b1t/watch/issues/35), [NT03 #57](https://github.com/K1w1b1t/watch/issues/57), [OB02 #59](https://github.com/K1w1b1t/watch/issues/59), [ST04 #61](https://github.com/K1w1b1t/watch/issues/61), [DE05 #63](https://github.com/K1w1b1t/watch/issues/63), [DE06 #64](https://github.com/K1w1b1t/watch/issues/64), [SK07 #75](https://github.com/K1w1b1t/watch/issues/75) |
+
+## Apoio e complementos — 14 issues
+
+Estas tarefas ajudam o trabalho ou acrescentam exemplos/recursos, mas não são pré-requisitos dos roteiros DS03/DS04. DS01 pode começar em paralelo a C01.
+
+| Issue | O que você constrói | Precisa de |
+| --- | --- | --- |
+| [UI03 #16](https://github.com/K1w1b1t/watch/issues/16) | Atualizar o painel quando um alerta mudar e recuperar após desconexão | [UI02 #15](https://github.com/K1w1b1t/watch/issues/15) |
+| [CO02 #18](https://github.com/K1w1b1t/watch/issues/18) | Adicionar ao SDK TypeScript uma opção limitada de fila e reenvio | [SK01 #30](https://github.com/K1w1b1t/watch/issues/30) |
+| [DS01 #23](https://github.com/K1w1b1t/watch/issues/23) | Fazer o GitHub executar testes e procurar segredos nas alterações | Nenhuma outra issue |
+| [SK02 #31](https://github.com/K1w1b1t/watch/issues/31) | Mostrar como usar o SDK em uma rota Next.js | [SK01 #30](https://github.com/K1w1b1t/watch/issues/30) |
+| [SK03 #32](https://github.com/K1w1b1t/watch/issues/32) | Mostrar como registrar um acesso negado em uma aplicação NestJS | [SK07 #75](https://github.com/K1w1b1t/watch/issues/75) |
+| [SK04 #33](https://github.com/K1w1b1t/watch/issues/33) | Mostrar como o React envia um sinal consentido pelo próprio servidor | [SK07 #75](https://github.com/K1w1b1t/watch/issues/75) |
+| [OB03 #60](https://github.com/K1w1b1t/watch/issues/60) | Mostrar se recebimento, análise e entrega estão funcionando | [IN03 #4](https://github.com/K1w1b1t/watch/issues/4), [DE03 #13](https://github.com/K1w1b1t/watch/issues/13), [NT02 #56](https://github.com/K1w1b1t/watch/issues/56) |
+| [DE04 #62](https://github.com/K1w1b1t/watch/issues/62) | Carregar configurações de regras sem executar código recebido | [DE02 #12](https://github.com/K1w1b1t/watch/issues/12) |
+| [IF04 #69](https://github.com/K1w1b1t/watch/issues/69) | Decidir onde cada componente remoto ficaria e conferir custos | [C03 #72](https://github.com/K1w1b1t/watch/issues/72) |
+| [IF02 #21](https://github.com/K1w1b1t/watch/issues/21) | Testar Worker e D1 em um laboratório separado na Cloudflare | [IF04 #69](https://github.com/K1w1b1t/watch/issues/69) |
+| [IF03 #22](https://github.com/K1w1b1t/watch/issues/22) | Preparar a configuração de uma máquina remota para o servidor | [IF04 #69](https://github.com/K1w1b1t/watch/issues/69) |
+| [DS02 #24](https://github.com/K1w1b1t/watch/issues/24) | Verificar vulnerabilidades no código e nas dependências que já existem | [DS01 #23](https://github.com/K1w1b1t/watch/issues/23) |
+| [DE07 #65](https://github.com/K1w1b1t/watch/issues/65) | Demonstrar uma pontuação de sinais com explicação de cada ponto | [DE04 #62](https://github.com/K1w1b1t/watch/issues/62) |
+| [DE08 #66](https://github.com/K1w1b1t/watch/issues/66) | Converter um tipo simples de regra Sigma para o catálogo do Watch | [DE04 #62](https://github.com/K1w1b1t/watch/issues/62) |
+
+## Como sair deste índice e começar
+
+Abra a issue e leia entrega, exemplo, passos e demonstração. Se houver dependência aberta, confira se dá para usar um substituto no desenvolvimento ou escolha outra tarefa liberada. O [guia de execução](execucao.md) detalha como testar e apresentar a alteração.

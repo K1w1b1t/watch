@@ -1,38 +1,66 @@
-# Segurança do laboratório
+# O que precisamos proteger e como testar
 
-## Fronteiras de confiança
+**Use este documento para:** entender os riscos da sua tarefa e escolher o teste negativo adequado. As regras de campos e respostas estão nos [contratos](contratos.md).
 
-SDK/emissor é não confiável mesmo autenticado. Worker valida método/corpo/schema e chama core com credencial interna distinta. Core determina tenant pela chave e verifica source/status antes de persistir. Contexto fornecido pelo cliente não autoriza acesso. Falha de dependência fecha acesso e não produz sucesso falso.
+## 1. Uma aplicação autenticada ainda pode mandar dado incorreto
 
-Chaves de SDK: 256 bits aleatórios, somente hash SHA-256/metadados, comparação segura, exibição única e revogação consultada na autoridade do core. Chave de SDK só escreve eventos; não lê alertas nem autentica chamadas internas. Emissão/revogação são CLIs locais; sem pareamento. Nenhum segredo entra em erro/body/log.
+Uma chave válida só diz que a chamada tem uma identidade reconhecida. A entrada ainda precisa validar tamanho, campos e vínculo com a fonte. O servidor confere fonte/estado antes de guardar.
 
-JWT humano: assinatura/algoritmo/issuer/audience/expiração e membership/papel validados. Emissor/JWKS de desenvolvimento só loopback; nunca perfil remoto. Fixtures/CLI definem memberships. Viewer lê e analyst altera; API e Channel autorizam cada tenant/objeto. Token expirado ou membership retirada interrompe acesso correspondente.
+Exemplo: a chave de app-a não permite escrever como app-b. Se o evento tentar trazer tenant_id para escolher outra organização, o campo é rejeitado.
 
-React de exemplo envia somente sinal de catálogo ao backend same-origin com sessão, CSRF/origem, limite e consentimento. Backend constrói envelope e envia pelo SDK TS; chave não vai ao browser. Não há APIs de plataformas, agentes, sensores ou coleta oculta.
+## 2. Não misturar as três credenciais
 
-## Exercícios
-
-| Exercício sintético | Resultado verificável |
+| Credencial | Proteção necessária |
 | --- | --- |
-| Body/schema inválido e excesso de tamanho | 400/413/415, sem eco de entrada |
-| BOLA entre A/B | 404 no detalhe, zero vazamento em lista/canal |
-| Cinco falhas em 60s | Perfil básico: um medium; quatro: zero |
-| Cinco falhas e sucesso multifonte vinculado | Perfil ampliado: um high; sem vínculo: zero |
-| Replay/conflito | 200/409, sem duplicar efeitos |
-| Rajada ou buffer cheio | 429, limite explícito e sem falso sucesso |
-| Revogar chave ou desabilitar source | 401/403 no próximo envio |
-| Core/store/sink offline | Falha observável, retomada por checkpoint/outbox |
-| Expurgo de evento/snapshot | Snapshot preservado ou evidence_expired explícito |
-| Fixture inerte de segredo/vulnerabilidade | CI vermelho/verde com evidência |
+| Chave do SDK | 256 bits aleatórios; exibir uma vez; guardar só hash SHA-256/metadados; verificar estado atual e comparar de forma segura |
+| Credencial interna | Só usada entre entrada e servidor; não deve estar no navegador nem ser substituída por chave de SDK |
+| Token humano | Verificar assinatura, algoritmo, emissor, destinatário, expiração e vínculo/papel em cada organização |
 
-Somente ambientes próprios, dados sintéticos e carga local limitada. Sem malware, exploração de terceiros, varredura da Internet ou alteração em contas/projetos existentes.
+A emissão/revogação de chaves é por comando local. O emissor humano de demonstração só roda na própria máquina e não pode ser ativado em perfil remoto. Falha na verificação não libera acesso.
 
-## Dados e demonstração
+## 3. Cada organização só acessa seus dados
 
-Schemas fechados, sem payload livre, senha, token, dados pessoais ou identificadores de host. IDs artificiais em fixtures. Limites de string não garantem por si sós ausência de PII; política de geração pertence à instrumentação. Evidência/hash não provam que origem comprometida diz a verdade; alerta/score não confirma invasão.
+Listagem, detalhe, alteração e canal ao vivo precisam aplicar a mesma separação. Filtrar a tela não resolve: alguém pode chamar a API diretamente.
 
-Composição local com loopback, processo sem root e volume privado do core. Logs só request_id, resultado e code, sem bodies/Authorization. Métricas técnicas locais de OB03 usam labels limitados, sem IDs. Retenção e saturação seguem contratos; atraso/expurgo pode criar coverage_gap.
+Exemplo obrigatório: viewer de A tenta abrir alerta de B e recebe 404. Analyst de A também não pode alterá-lo. Viewer de A não altera alerta nem de A. Sessão expirada ou vínculo retirado interrompe os acessos correspondentes.
 
-Outbox e exportação só usam segredos no servidor. Discord sem menções/eventos brutos. Loki/Grafana com isolamento por stack/credencial, não filtro visual. E2Es usam Discord fake, nenhum envio real é necessário.
+## 4. O navegador não recebe a chave do SDK
 
-Roteiro DS03 cobre reconhecer/resolver, revogar e retomar processo local; DS04 cobre saídas e múltiplos SDKs. Não ampliar esse roteiro para onboarding empresarial, casos, tuning, backup/restauração integrados ou metas de capacidade/latência nesta fase.
+No exemplo React, o navegador manda apenas um sinal permitido ao próprio backend. O backend confere sessão, consentimento, origem, proteção CSRF e limite de pedidos, constrói o evento e chama o SDK.
+
+Esse relato continua classificado como client_reported: o usuário pode controlar seu navegador. Não permitir propriedades livres nem apresentar analytics como prova de invasão.
+
+## 5. Guardar só os dados necessários
+
+Usar identificadores fictícios e formatos fechados. Não enviar senha, token, email, nome, CPF, IP, hostname, comando ou corpo livre. Não copiar Authorization/body para mensagens de erro ou registros.
+
+Hash e pseudônimo não eliminam todos os riscos. A regra do formato não consegue descobrir se qualquer string é um nome real; a instrumentação deve construir apenas os campos permitidos. Uma fonte comprometida pode mentir mesmo se seu hash de conteúdo estiver correto.
+
+A cópia de evidência precisa seguir a retenção e mostrar expiração. Medidas técnicas não usam IDs ilimitados como rótulos. No Discord, desativar menções e enviar só o resumo. Tokens de Discord/Loki/Grafana ficam no servidor.
+
+## 6. Falhas não podem parecer sucesso
+
+Se não foi possível guardar um evento, não devolver stored. Se a análise perdeu eventos por retenção, mostrar coverage_gap. Se um destino de notificação caiu, manter pendência e último sucesso real. As filas e as tentativas têm limites para não crescer ou repetir indefinidamente.
+
+## 7. Exercícios que acompanham as entregas
+
+| O que tentar no laboratório | O que precisa acontecer |
+| --- | --- |
+| Campo extra, corpo grande ou conteúdo inválido | Rejeição 400/413/415 sem ecoar o conteúdo |
+| Chave inválida/revogada ou fonte desativada | Negação 401/403 antes de guardar |
+| Mesmo ID com conteúdo igual ou diferente | Reenvio 200 sem duplicar ou conflito 409 sem substituir |
+| Usuário A consultando/alterando B | Nenhum dado vazado, mesmo chamando API diretamente |
+| Mais pedidos ou dados que o limite | 429 e indicação compreensível da causa |
+| Quatro e depois cinco falhas em 60s | Perfil básico: zero e depois um medium |
+| Falhas/sucesso de fontes sem vínculo | Sem correlação indevida entre fontes/organizações |
+| Queda entre salvar alerta e criar aviso | Outbox recupera o trabalho após reinício |
+| Limpeza de buffer e depois da cópia de evidência | Cópia preservada primeiro, expiração explícita depois |
+| Segredo fictício detectável em teste de CI | Verificador falha e volta a passar após correção |
+
+Todos esses exercícios usam ambiente próprio e dados fictícios. DS03 e DS04 definem a prova integrada; não exigem malware, varredura da internet ou conta real de cliente.
+
+## 8. Configuração do ambiente local
+
+Usar portas acessíveis só pela máquina local, processos sem root e volume privado do servidor. O banco não fica aberto na rede. Para exercícios remotos opcionais, conferir custo, autenticação e TLS antes de provisionar, conforme [custos](custos.md).
+
+Isolar cópias de organizações no Loki/Grafana por instância/credencial. Um filtro visual no dashboard não é controle de acesso.

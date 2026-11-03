@@ -1,9 +1,5 @@
-# Documentação
+# Documentação do Watch
 
-O [planejamento vigente](ia/README.md) define o laboratório Watch com ingestão somente por SDKs, contratos compartilhados e entregas locais verificáveis. A documentação dos módulos acompanha sua implementação.
+A [página inicial da documentação](ia/README.md) explica por onde começar e para que serve cada arquivo.
 
-- [Plano geral](ia/plano-geral.md)
-- [Arquitetura](ia/arquitetura.md)
-- [Contratos](ia/contratos.md)
-- [Backlog](ia/backlog.md)
-- [Diagramas](ia/diagramas.md)
+Se você ainda não conhece o projeto, leia o [exemplo completo](ia/plano-geral.md). Se já quer escolher trabalho, abra a [ordem de execução](ia/ordem-execucao.md) ou a [divisão sugerida para a dupla](ia/trabalho-em-dupla.md).

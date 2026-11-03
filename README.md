@@ -1,13 +1,16 @@
 # Watch
 
-Projeto da Kiwibit para aprender e construir uma plataforma de coleta, detecção e investigação de eventos de segurança, com foco em DevSecOps.
+O Watch é um projeto para aprender e construir um sistema que recebe acontecimentos de uma aplicação e procura sequências suspeitas. Por exemplo: uma aplicação informa cinco falhas de login; o Watch cria um alerta e mostra no painel quais eventos explicam essa decisão.
 
-Status: planejamento do laboratório. A ingestão atual usa somente SDKs server-side TypeScript, Python e Go, com dados sintéticos. Exemplos Next.js/NestJS/React não dependem de plataformas de hospedagem. Painel, Discord e Loki/Grafana são consumidores/saídas.
+Vamos construir primeiro um laboratório local com dados fictícios. O repositório está na fase de planejamento: os comportamentos descritos serão implementados pelas issues.
 
-- [Planejamento vigente](docs/ia/README.md)
-- [Backlog e dependências](docs/ia/backlog.md)
-- [Issues](https://github.com/K1w1b1t/watch/issues)
+**Comece aqui:** [entenda o projeto e encontre o próximo passo](docs/ia/README.md).
 
-Adaptadores de plataformas, agentes/sensores desktop/mobile e piloto empresarial ficam fora desta fase.
+- [O que vamos construir, com um exemplo completo](docs/ia/plano-geral.md)
+- [Qual tarefa pegar e em que ordem](docs/ia/ordem-execucao.md)
+- [Sugestão de trabalho para Gustavo e João](docs/ia/trabalho-em-dupla.md)
+- [Todas as tarefas](docs/ia/backlog.md)
+
+Os eventos entram por bibliotecas de envio — os SDKs — usadas no servidor das aplicações TypeScript, Python e Go. As aplicações de exemplo pertencem ao próprio projeto; não precisamos acessar contas ou sistemas reais de clientes.
 
 Licença [MIT](LICENSE).
